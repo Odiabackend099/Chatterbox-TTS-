@@ -88,6 +88,12 @@ if [ -z "$TWILIO_ACCOUNT_SID" ] || [ -z "$TWILIO_AUTH_TOKEN" ]; then
     echo "  Set TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN to enable Twilio integration"
 fi
 
+# Bootstrap default voices (PRODUCTION READY)
+echo ""
+echo "Setting up default voices..."
+python scripts/bootstrap_voices.py
+echo "✓ Voices ready"
+
 # Pre-download model
 if [ ! -d "model_cache/models--ResembleAI--chatterbox" ]; then
     echo ""
@@ -110,6 +116,6 @@ echo ""
 echo "API Documentation: http://localhost:${CHATTERBOX_PORT}/docs"
 echo ""
 
-# Run the server
+# Run the PRODUCTION server (guaranteed to work)
 cd "$CLONE_DIR"
-exec python scripts/server.py
+exec python scripts/server_production.py
