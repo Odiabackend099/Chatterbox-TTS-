@@ -101,7 +101,7 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
         if payload.format == "wav":
             # Create WAV file in memory
             buffer = io.BytesIO()
-            sf.write(buffer, wav, 24000, format='WAV')
+            sf.write(buffer, wav, 24000, format='WAV', subtype='PCM_16')
             buffer.seek(0)
             media_type = "audio/wav"
 
@@ -137,7 +137,7 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
             except Exception as e:
                 logger.error(f"MP3 conversion failed: {e}, falling back to WAV")
                 buffer = io.BytesIO()
-                sf.write(buffer, wav, 24000, format='WAV')
+                sf.write(buffer, wav, 24000, format='WAV', subtype='PCM_16')
                 buffer.seek(0)
                 media_type = "audio/wav"
 
