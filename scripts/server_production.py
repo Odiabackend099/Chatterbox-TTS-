@@ -128,10 +128,20 @@ async def root():
         }
     }
 
+# Health check endpoint (for Docker healthcheck compatibility)
+@app.get("/health")
+async def health_check_root():
+    """Simple health check endpoint for Docker/K8s"""
+    return {
+        "status": "healthy",
+        "model_loaded": app.state.tts_model is not None
+    }
+
 # Main
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", os.getenv("CHATTERBOX_PORT", 8004)))
-    host = os.getenv("HOST", os.getenv("CHATTERBOX_HOST", "0.0.0.0"))
+    # CRITICAL: Always use CHATTERBOX_PORT first, ignore generic PORT variable
+    port = int(os.getenv("CHATTERBOX_PORT", os.getenv("PORT", 8004)))
+    host = os.getenv("CHATTERBOX_HOST", os.getenv("HOST", "0.0.0.0"))
     
     # CRITICAL: Must bind to 0.0.0.0 for RunPod/Docker deployment
     if host == "localhost" or host == "127.0.0.1":
