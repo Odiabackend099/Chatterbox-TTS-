@@ -99,13 +99,27 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
 
         # Convert to requested format
         if payload.format == "wav":
-            # Create WAV file in memory
+            # Create WAV file - use temp file for reliability
             import numpy as np
-            buffer = io.BytesIO()
+            import tempfile
+            from pathlib import Path
+            
             # Ensure wav is float32 numpy array
             if not isinstance(wav, np.ndarray):
                 wav = np.array(wav, dtype=np.float32)
-            sf.write(buffer, wav, 24000, format='WAV')
+            
+            # Write to temp file then read into buffer
+            with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
+                tmp_path = tmp.name
+            
+            sf.write(tmp_path, wav, 24000)
+            
+            with open(tmp_path, 'rb') as f:
+                buffer = io.BytesIO(f.read())
+            
+            # Clean up temp file
+            Path(tmp_path).unlink(missing_ok=True)
+            
             buffer.seek(0)
             media_type = "audio/wav"
 
@@ -141,10 +155,21 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
             except Exception as e:
                 logger.error(f"MP3 conversion failed: {e}, falling back to WAV")
                 import numpy as np
-                buffer = io.BytesIO()
+                import tempfile
+                from pathlib import Path
+                
                 if not isinstance(wav, np.ndarray):
                     wav = np.array(wav, dtype=np.float32)
-                sf.write(buffer, wav, 24000, format='WAV')
+                
+                with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
+                    tmp_path = tmp.name
+                
+                sf.write(tmp_path, wav, 24000)
+                
+                with open(tmp_path, 'rb') as f:
+                    buffer = io.BytesIO(f.read())
+                
+                Path(tmp_path).unlink(missing_ok=True)
                 buffer.seek(0)
                 media_type = "audio/wav"
 
