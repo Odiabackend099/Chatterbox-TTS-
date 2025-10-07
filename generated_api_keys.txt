@@ -1,0 +1,52 @@
+================================================================================
+CallWaiting TTS - API Key Generator
+================================================================================
+
+⚠  Warning: scrypt not available, using SHA256 (less secure)
+   Install passlib or upgrade to Python 3.6+ for proper scrypt support
+⚠  Warning: scrypt not available, using SHA256 (less secure)
+   Install passlib or upgrade to Python 3.6+ for proper scrypt support
+⚠  Warning: scrypt not available, using SHA256 (less secure)
+   Install passlib or upgrade to Python 3.6+ for proper scrypt support
+⚠  Warning: scrypt not available, using SHA256 (less secure)
+   Install passlib or upgrade to Python 3.6+ for proper scrypt support
+⚠  Warning: scrypt not available, using SHA256 (less secure)
+   Install passlib or upgrade to Python 3.6+ for proper scrypt support
+Generated API Keys:
+
+⚠️  CRITICAL: Store these keys securely! They will NOT be shown again.
+⚠️  Store in environment variables or secret manager (AWS Secrets Manager, etc.)
+
+Name:       Production Key #1
+Full Key:   cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
+Prefix:     cw_live_
+Hash:       scrypt$mzBXogc2OfbuynzvqHNEuw==$JhEQHtx5jqOKvpWZyf...
+
+Name:       Production Key #2
+Full Key:   cw_live_1MAkaV2KdHJuSKSc2LJd_cO71o-_kEijBg5fJgxnZoI
+Prefix:     cw_live_
+Hash:       scrypt$wakxZZySj6VHEQlF/wwS3Q==$+DAlYT5HP50Pgqk0hH...
+
+Name:       Production Key #3
+Full Key:   cw_live_9rSEdn-4tfW-blbihfBsm08S1Zggs0OaJuLbCFXGKd8
+Prefix:     cw_live_
+Hash:       scrypt$BBs7fRFOjR+5z/NKxQUE6g==$axOSYQ/swINfhXg06s...
+
+Name:       Production Key #4
+Full Key:   cw_live_-_MZyOhDPDB4PWBS3tfc-4mqONpa1dXhn6XjeL4aOlk
+Prefix:     cw_live_
+Hash:       scrypt$gs6d9ivgA8KyH3+H+9Ppag==$cedqdTQFlNxsLWKboV...
+
+Name:       Production Key #5
+Full Key:   cw_live_HpqXxNWGY6N4EO5ZP4nS6Vqo1shGUS-63HTIZh_EWVY
+Prefix:     cw_live_
+Hash:       scrypt$vK95l6sGoSmWrEQz/FkonQ==$eIHPZvriS675nH0qZ6...
+
+================================================================================
+To insert into database, run with --sql flag:
+  python3 scripts/generate_api_keys.py -n 5 --sql | psql -U postgres -d chatterbox
+
+Or manually insert into PostgreSQL:
+  INSERT INTO api_keys (name, key_prefix, key_hash, tenant_id, status)
+  VALUES ('<name>', '<prefix>', '<hash>', '<tenant_id>', 'active');
+================================================================================

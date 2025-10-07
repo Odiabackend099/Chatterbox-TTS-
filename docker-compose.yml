@@ -1,6 +1,57 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: chatterbox-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-chatterbox}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme123}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - chatterbox-network
+
+  # Redis Cache & Rate Limiting
+  redis:
+    image: redis:7-alpine
+    container_name: chatterbox-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - chatterbox-network
+
   # Main Chatterbox TTS Server
   chatterbox-tts:
     build:
@@ -12,6 +63,11 @@ services:
     image: chatterbox-tts:latest
     container_name: chatterbox-tts-server
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
     # Port mapping
     ports:
@@ -23,10 +79,23 @@ services:
       - CHATTERBOX_HOST=0.0.0.0
       - CHATTERBOX_PORT=8004
       - CHATTERBOX_DEVICE=auto
+      - ENVIRONMENT=${ENVIRONMENT:-production}
 
       # Model config
       - HF_HUB_ENABLE_HF_TRANSFER=1
       - TRANSFORMERS_CACHE=/app/hf_cache
+
+      # Database config
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB:-chatterbox}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme123}
+
+      # Redis config
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
 
       # API Keys (set these in .env file)
       - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
@@ -76,8 +145,11 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    
+    networks:
+      - chatterbox-network
 
-  # Optional: Nginx reverse proxy for SSL/TLS
+  # Nginx reverse proxy for SSL/TLS and rate limiting
   nginx:
     image: nginx:alpine
     container_name: chatterbox-nginx
@@ -86,19 +158,40 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ssl:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - nginx_logs:/var/log/nginx
     depends_on:
       - chatterbox-tts
+    networks:
+      - chatterbox-network
     profiles:
       - production  # Only start with --profile production
+
+  # Certbot for Let's Encrypt SSL
+  certbot:
+    image: certbot/certbot
+    container_name: chatterbox-certbot
+    volumes:
+      - ./ssl:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    profiles:
+      - production
 
 # Named volumes
 volumes:
   hf_cache:
     driver: local
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  nginx_logs:
+    driver: local
 
 # Networks
 networks:
-  default:
-    name: chatterbox-network
+  chatterbox-network:
+    driver: bridge

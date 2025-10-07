@@ -23,9 +23,16 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
+import asyncpg
+import redis.asyncio as aioredis
 
 # Import Chatterbox TTS
 from chatterbox.tts import ChatterboxTTS
+
+# Import our production modules
+from auth import APIKeyMiddleware
+from api_v1 import router as api_v1_router
+from monitoring import router as monitoring_router, set_app_info, set_model_loaded
 
 # LLM clients
 try:
@@ -85,6 +92,22 @@ def load_config():
         else:
             device = 'cpu'
     config['model']['device'] = device
+    
+    # Database configuration
+    if 'database' not in config:
+        config['database'] = {}
+    config['database']['host'] = os.getenv('POSTGRES_HOST', config.get('database', {}).get('host', 'localhost'))
+    config['database']['port'] = int(os.getenv('POSTGRES_PORT', config.get('database', {}).get('port', 5432)))
+    config['database']['database'] = os.getenv('POSTGRES_DB', config.get('database', {}).get('database', 'chatterbox'))
+    config['database']['user'] = os.getenv('POSTGRES_USER', config.get('database', {}).get('user', 'postgres'))
+    config['database']['password'] = os.getenv('POSTGRES_PASSWORD', config.get('database', {}).get('password', ''))
+    
+    # Redis configuration
+    if 'redis' not in config:
+        config['redis'] = {}
+    config['redis']['host'] = os.getenv('REDIS_HOST', config.get('redis', {}).get('host', 'localhost'))
+    config['redis']['port'] = int(os.getenv('REDIS_PORT', config.get('redis', {}).get('port', 6379)))
+    config['redis']['db'] = int(os.getenv('REDIS_DB', config.get('redis', {}).get('db', 0)))
 
     return config
 
@@ -92,9 +115,11 @@ config = load_config()
 
 # Initialize FastAPI
 app = FastAPI(
-    title="Chatterbox TTS Server with Twilio Integration",
-    description="Production-ready TTS server for voice agents",
-    version="1.0.0"
+    title="CallWaiting TTS API",
+    description="Production-ready TTS server for voice agents with API key authentication",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 
 # CORS middleware
@@ -107,7 +132,10 @@ if config['security']['enable_cors']:
         allow_headers=["*"],
     )
 
-# Global state
+# Store config in app state for access in routes
+app.state.config = config
+
+# Global state (legacy, will be moved to app.state)
 class AppState:
     """Application state manager"""
     def __init__(self):
@@ -117,6 +145,9 @@ class AppState:
         self.call_sessions: Dict[str, Dict] = {}  # Track active calls
 
 state = AppState()
+
+# Alias for app.state access
+app.state.tts_model = None
 
 # Pydantic models
 class TTSRequest(BaseModel):
@@ -147,21 +178,64 @@ class LLMRequest(BaseModel):
 # Startup event
 @app.on_event("startup")
 async def startup_event():
-    """Initialize models and clients on startup"""
-    logger.info("Starting Chatterbox TTS Server...")
+    """Initialize models, database, and clients on startup"""
+    logger.info("Starting CallWaiting TTS API Server...")
 
     # Create necessary directories
     for directory in ['outputs', 'logs', 'model_cache']:
         Path(directory).mkdir(exist_ok=True)
+    
+    # Initialize database connection pool
+    try:
+        db_config = config['database']
+        dsn = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
+        
+        app.state.pg = await asyncpg.create_pool(
+            dsn=dsn,
+            min_size=2,
+            max_size=10,
+            command_timeout=60
+        )
+        logger.info("✓ PostgreSQL connection pool initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize database pool: {e}")
+        logger.error("Server will start but authentication will not work")
+        app.state.pg = None
+    
+    # Initialize Redis connection
+    try:
+        redis_config = config['redis']
+        app.state.redis = await aioredis.from_url(
+            f"redis://{redis_config['host']}:{redis_config['port']}/{redis_config['db']}",
+            encoding="utf-8",
+            decode_responses=True
+        )
+        # Test connection
+        await app.state.redis.ping()
+        logger.info("✓ Redis connection initialized")
+    except Exception as e:
+        logger.error(f"Failed to initialize Redis: {e}")
+        logger.error("Server will start but rate limiting will not work")
+        app.state.redis = None
+    
+    # Add authentication middleware (only if database is available)
+    if app.state.pg and app.state.redis:
+        app.add_middleware(APIKeyMiddleware, pool=app.state.pg, redis_client=app.state.redis)
+        logger.info("✓ API key authentication middleware enabled")
+    else:
+        logger.warning("⚠ Authentication middleware disabled (database/redis unavailable)")
 
     # Initialize TTS model
     try:
         logger.info(f"Loading Chatterbox TTS model on {config['model']['device']}...")
         state.tts_model = ChatterboxTTS.from_pretrained(device=config['model']['device'])
+        app.state.tts_model = state.tts_model  # Also store in app.state for API v1
+        set_model_loaded(True)
         logger.info("✓ TTS model loaded successfully")
     except Exception as e:
         logger.error(f"Failed to load TTS model: {e}")
         logger.error("Server will start but TTS will not work until model is loaded")
+        set_model_loaded(False)
 
     # Initialize LLM client
     try:
@@ -192,22 +266,56 @@ async def startup_event():
     except Exception as e:
         logger.error(f"Failed to initialize Twilio client: {e}")
 
+    # Set application info for monitoring
+    set_app_info(
+        version="1.0.0",
+        environment=os.getenv("ENVIRONMENT", "production"),
+        device=config['model']['device']
+    )
+    
+    logger.info("=" * 80)
     logger.info("Server startup complete")
     logger.info(f"Device: {config['model']['device']}")
     logger.info(f"Port: {config['server']['port']}")
+    logger.info(f"Database: {'✓ Connected' if app.state.pg else '✗ Not connected'}")
+    logger.info(f"Redis: {'✓ Connected' if app.state.redis else '✗ Not connected'}")
+    logger.info(f"TTS Model: {'✓ Loaded' if state.tts_model else '✗ Not loaded'}")
+    logger.info("=" * 80)
 
-# Health check endpoint
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup on shutdown"""
+    logger.info("Shutting down server...")
+    
+    # Close database pool
+    if hasattr(app.state, 'pg') and app.state.pg:
+        await app.state.pg.close()
+        logger.info("✓ Database pool closed")
+    
+    # Close Redis connection
+    if hasattr(app.state, 'redis') and app.state.redis:
+        await app.state.redis.close()
+        logger.info("✓ Redis connection closed")
+    
+    logger.info("Shutdown complete")
+
+# Health check endpoints (no auth required)
 @app.get("/")
 async def root():
     """Health check and server info"""
     return {
         "status": "running",
-        "service": "Chatterbox TTS Server",
+        "service": "CallWaiting TTS API",
         "version": "1.0.0",
         "model_loaded": state.tts_model is not None,
         "llm_available": state.llm_client is not None,
         "twilio_available": state.twilio_client is not None,
-        "device": config['model']['device']
+        "database_connected": hasattr(app.state, 'pg') and app.state.pg is not None,
+        "redis_connected": hasattr(app.state, 'redis') and app.state.redis is not None,
+        "device": config['model']['device'],
+        "docs": "/docs",
+        "api_v1": "/v1"
     }
 
 @app.get("/health")
@@ -218,6 +326,8 @@ async def health_check():
         "timestamp": datetime.now().isoformat(),
         "components": {
             "tts_model": state.tts_model is not None,
+            "database": hasattr(app.state, 'pg') and app.state.pg is not None,
+            "redis": hasattr(app.state, 'redis') and app.state.redis is not None,
             "llm_client": state.llm_client is not None,
             "twilio_client": state.twilio_client is not None
         },
@@ -227,11 +337,24 @@ async def health_check():
         }
     }
 
+    warnings = []
     if not state.tts_model:
+        warnings.append("TTS model not loaded")
+    if not hasattr(app.state, 'pg') or not app.state.pg:
+        warnings.append("Database not connected")
+    if not hasattr(app.state, 'redis') or not app.state.redis:
+        warnings.append("Redis not connected")
+    
+    if warnings:
         health["status"] = "degraded"
-        health["warnings"] = ["TTS model not loaded"]
+        health["warnings"] = warnings
 
     return health
+
+
+# Include production API routes
+app.include_router(api_v1_router, tags=["API v1"])
+app.include_router(monitoring_router, tags=["Monitoring"])
 
 # TTS Generation Endpoint
 @app.post("/tts")
