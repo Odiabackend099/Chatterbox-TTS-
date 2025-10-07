@@ -89,8 +89,7 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
             text=payload.text,
             exaggeration=voice_params['exaggeration'],
             temperature=voice_params['temperature'],
-            cfg_weight=voice_params['cfg_weight'],
-            seed=0  # Use 0 for consistent results, or make it random
+            cfg_weight=voice_params['cfg_weight']
         )
 
         # Apply speed factor if needed
