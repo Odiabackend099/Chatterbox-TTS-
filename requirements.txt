@@ -1,0 +1,45 @@
+# Core dependencies
+chatterbox-tts==0.1.2
+
+# PyTorch (CPU by default, override in Dockerfile for GPU)
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+
+# Web framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# Audio processing
+librosa>=0.10.0
+soundfile>=0.12.0
+pydub>=0.25.0
+numpy>=1.24.0,<2.0.0
+
+# Configuration
+pyyaml>=6.0
+
+# HTTP client
+requests>=2.31.0
+httpx>=0.25.0
+
+# LLM clients
+anthropic>=0.34.0
+openai>=1.3.0
+
+# Twilio
+twilio>=8.10.0
+
+# Utilities
+python-dotenv>=1.0.0
+aiofiles>=23.2.0
+
+# Development dependencies (optional)
+pytest>=7.4.0
+black>=23.11.0
+flake8>=6.1.0
+ipython>=8.17.0
+
+# Monitoring (optional)
+prometheus-client>=0.19.0

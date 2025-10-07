@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # Chatterbox TTS Server (CPU-only for Mac/Windows)
+  chatterbox-tts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PYTHON_VERSION: "3.11"
+        RUNTIME: cpu
+    image: chatterbox-tts:cpu
+    container_name: chatterbox-tts-server
+    restart: unless-stopped
+
+    # Port mapping
+    ports:
+      - "8004:8004"
+
+    # Environment variables
+    environment:
+      # Server config
+      - CHATTERBOX_HOST=0.0.0.0
+      - CHATTERBOX_PORT=8004
+      - CHATTERBOX_DEVICE=cpu  # Force CPU mode
+
+      # Model config
+      - HF_HUB_ENABLE_HF_TRANSFER=1
+      - TRANSFORMERS_CACHE=/app/hf_cache
+
+      # API Keys (loaded from .env file)
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+    # Volume mounts
+    volumes:
+      # Configuration
+      - ./config/config.yaml:/app/config/config.yaml:ro
+
+      # Voice files
+      - ./voices:/app/voices
+      - ./reference_audio:/app/reference_audio
+
+      # Output and cache (persistent)
+      - ./outputs:/app/outputs
+      - ./logs:/app/logs
+      - hf_cache:/app/hf_cache
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s  # Longer for CPU mode + model download
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Named volumes
+volumes:
+  hf_cache:
+    driver: local
+
+# Networks
+networks:
+  default:
+    name: chatterbox-network

@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # Main Chatterbox TTS Server
+  chatterbox-tts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PYTHON_VERSION: "3.11"
+        RUNTIME: nvidia  # Change to 'cpu' or 'rocm' if not using NVIDIA
+    image: chatterbox-tts:latest
+    container_name: chatterbox-tts-server
+    restart: unless-stopped
+
+    # Port mapping
+    ports:
+      - "8004:8004"
+
+    # Environment variables
+    environment:
+      # Server config
+      - CHATTERBOX_HOST=0.0.0.0
+      - CHATTERBOX_PORT=8004
+      - CHATTERBOX_DEVICE=auto
+
+      # Model config
+      - HF_HUB_ENABLE_HF_TRANSFER=1
+      - TRANSFORMERS_CACHE=/app/hf_cache
+
+      # API Keys (set these in .env file)
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+
+      # NVIDIA GPU support
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+    # Volume mounts
+    volumes:
+      # Configuration
+      - ./config/config.yaml:/app/config/config.yaml:ro
+
+      # Voice files
+      - ./voices:/app/voices
+      - ./reference_audio:/app/reference_audio
+
+      # Output and cache (persistent)
+      - ./outputs:/app/outputs
+      - ./logs:/app/logs
+      - hf_cache:/app/hf_cache
+
+    # GPU support (NVIDIA)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Optional: Nginx reverse proxy for SSL/TLS
+  nginx:
+    image: nginx:alpine
+    container_name: chatterbox-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - chatterbox-tts
+    profiles:
+      - production  # Only start with --profile production
+
+# Named volumes
+volumes:
+  hf_cache:
+    driver: local
+
+# Networks
+networks:
+  default:
+    name: chatterbox-network
