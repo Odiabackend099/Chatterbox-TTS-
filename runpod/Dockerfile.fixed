@@ -1,0 +1,50 @@
+# RunPod Deployment - Fixed for HTTP Proxy
+FROM runpod/pytorch:1.0.1-cu1281-torch280-ubuntu2404
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    DEBIAN_FRONTEND=noninteractive \
+    CHATTERBOX_PORT=8888 \
+    CHATTERBOX_HOST=0.0.0.0 \
+    CHATTERBOX_DEVICE=cuda \
+    HF_HOME=/workspace/hf_cache \
+    TRANSFORMERS_CACHE=/workspace/hf_cache
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    wget \
+    ffmpeg \
+    libsndfile1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /workspace
+
+# Clone repository
+RUN git clone https://github.com/Odiabackend099/Chatterbox-TTS-.git chatterbox-tts
+
+# Install Python dependencies
+WORKDIR /workspace/chatterbox-tts
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
+
+# Create necessary directories
+RUN mkdir -p outputs logs model_cache voices reference_audio
+
+# Bootstrap voices
+RUN python scripts/bootstrap_voices.py
+
+# Expose port 8888 (RunPod's HTTP proxy port)
+EXPOSE 8888
+
+# Health check on port 8888
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+    CMD curl -f http://localhost:8888/health || exit 1
+
+# Start server on port 8888
+CMD ["python", "scripts/server_production.py"]
+
