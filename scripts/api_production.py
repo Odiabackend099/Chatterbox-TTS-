@@ -104,15 +104,29 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
             import tempfile
             from pathlib import Path
             
-            # Ensure wav is float32 numpy array
-            if not isinstance(wav, np.ndarray):
+            # Debug: Log wav type and shape
+            logger.info(f"[{request_id}] wav type: {type(wav)}, shape: {wav.shape if hasattr(wav, 'shape') else 'no shape'}")
+            
+            # Ensure wav is numpy array
+            if isinstance(wav, list):
                 wav = np.array(wav, dtype=np.float32)
+            elif not isinstance(wav, np.ndarray):
+                wav = np.array(wav, dtype=np.float32)
+            
+            # Flatten if multi-dimensional
+            if len(wav.shape) > 1:
+                wav = wav.flatten()
             
             # Write to temp file then read into buffer
             with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
                 tmp_path = tmp.name
             
-            sf.write(tmp_path, wav, 24000)
+            try:
+                sf.write(tmp_path, wav, 24000)
+                logger.info(f"[{request_id}] Wrote WAV to temp file: {tmp_path}")
+            except Exception as write_error:
+                logger.error(f"[{request_id}] sf.write failed: {write_error}")
+                raise
             
             with open(tmp_path, 'rb') as f:
                 buffer = io.BytesIO(f.read())
