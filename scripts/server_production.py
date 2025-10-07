@@ -92,7 +92,7 @@ async def startup():
     logger.info("=" * 80)
     logger.info("✓ SERVER READY")
     logger.info("=" * 80)
-    port = int(os.getenv("PORT", os.getenv("CHATTERBOX_PORT", 8004)))
+    port = int(os.getenv("PORT", os.getenv("CHATTERBOX_PORT", 8888)))
     
     logger.info("")
     logger.info("API Endpoints:")
@@ -139,8 +139,8 @@ async def health_check_root():
 
 # Main
 if __name__ == "__main__":
-    # CRITICAL: Always use CHATTERBOX_PORT first, ignore generic PORT variable
-    port = int(os.getenv("CHATTERBOX_PORT", os.getenv("PORT", 8004)))
+    # CRITICAL: Default port 8888 for RunPod production deployment
+    port = int(os.getenv("CHATTERBOX_PORT", os.getenv("PORT", 8888)))
     host = os.getenv("CHATTERBOX_HOST", os.getenv("HOST", "0.0.0.0"))
     
     # CRITICAL: Must bind to 0.0.0.0 for RunPod/Docker deployment
