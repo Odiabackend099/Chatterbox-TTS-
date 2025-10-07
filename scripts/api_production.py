@@ -99,42 +99,78 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
 
         # Convert to requested format
         if payload.format == "wav":
-            # Create WAV file - use temp file for reliability
+            # Create WAV file - ROBUST APPROACH
             import numpy as np
             import tempfile
             from pathlib import Path
-            
-            # Debug: Log wav type and shape
-            logger.info(f"[{request_id}] wav type: {type(wav)}, shape: {wav.shape if hasattr(wav, 'shape') else 'no shape'}")
-            
-            # Ensure wav is numpy array
-            if isinstance(wav, list):
+
+            # Ensure wav is proper numpy array with correct dtype
+            if not isinstance(wav, np.ndarray):
+                logger.info(f"[{request_id}] Converting wav from {type(wav)} to numpy array")
                 wav = np.array(wav, dtype=np.float32)
-            elif not isinstance(wav, np.ndarray):
-                wav = np.array(wav, dtype=np.float32)
-            
+            else:
+                # Ensure float32 dtype for soundfile compatibility
+                if wav.dtype != np.float32:
+                    logger.info(f"[{request_id}] Converting wav dtype from {wav.dtype} to float32")
+                    wav = wav.astype(np.float32)
+
             # Flatten if multi-dimensional
             if len(wav.shape) > 1:
+                logger.info(f"[{request_id}] Flattening wav from shape {wav.shape}")
                 wav = wav.flatten()
-            
-            # Write to temp file then read into buffer
+
+            # Validate audio data
+            if len(wav) == 0:
+                raise ValueError("Generated audio is empty")
+
+            # Normalize if values are out of range
+            max_val = np.abs(wav).max()
+            if max_val > 1.0:
+                logger.warning(f"[{request_id}] Audio values out of range (max={max_val}), normalizing")
+                wav = wav / max_val
+
+            logger.info(f"[{request_id}] Prepared WAV: shape={wav.shape}, dtype={wav.dtype}, range=[{wav.min():.3f}, {wav.max():.3f}]")
+
+            # Write to temp file with explicit parameters
             with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
                 tmp_path = tmp.name
-            
+
             try:
-                sf.write(tmp_path, wav, 24000)
-                logger.info(f"[{request_id}] Wrote WAV to temp file: {tmp_path}")
+                # Write with explicit format specification
+                sf.write(
+                    tmp_path,
+                    wav,
+                    samplerate=24000,
+                    subtype='PCM_16'  # Explicit 16-bit PCM encoding
+                )
+                logger.info(f"[{request_id}] ✓ Wrote WAV to {tmp_path} ({len(wav)} samples)")
+
+                # Verify the file was created and has content
+                tmp_size = Path(tmp_path).stat().st_size
+                if tmp_size == 0:
+                    raise ValueError(f"Temp WAV file is empty: {tmp_path}")
+                logger.info(f"[{request_id}] ✓ Temp file size: {tmp_size} bytes")
+
             except Exception as write_error:
-                logger.error(f"[{request_id}] sf.write failed: {write_error}")
+                logger.error(f"[{request_id}] ✗ sf.write failed: {write_error}")
+                Path(tmp_path).unlink(missing_ok=True)
                 raise
-            
-            with open(tmp_path, 'rb') as f:
-                buffer = io.BytesIO(f.read())
-            
-            # Clean up temp file
-            Path(tmp_path).unlink(missing_ok=True)
-            
-            buffer.seek(0)
+
+            # Read temp file into buffer
+            try:
+                with open(tmp_path, 'rb') as f:
+                    audio_bytes = f.read()
+                buffer = io.BytesIO(audio_bytes)
+                buffer.seek(0)
+                logger.info(f"[{request_id}] ✓ Read {len(audio_bytes)} bytes from temp file")
+            except Exception as read_error:
+                logger.error(f"[{request_id}] ✗ Failed to read temp file: {read_error}")
+                raise
+            finally:
+                # Always clean up temp file
+                Path(tmp_path).unlink(missing_ok=True)
+                logger.info(f"[{request_id}] ✓ Cleaned up temp file")
+
             media_type = "audio/wav"
 
         elif payload.format == "pcm16":
@@ -167,24 +203,34 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
                 media_type = "audio/mpeg"
 
             except Exception as e:
-                logger.error(f"MP3 conversion failed: {e}, falling back to WAV")
+                logger.error(f"[{request_id}] MP3 conversion failed: {e}, falling back to WAV")
                 import numpy as np
                 import tempfile
                 from pathlib import Path
-                
+
+                # Ensure proper numpy array
                 if not isinstance(wav, np.ndarray):
                     wav = np.array(wav, dtype=np.float32)
-                
+                elif wav.dtype != np.float32:
+                    wav = wav.astype(np.float32)
+
+                # Normalize if needed
+                max_val = np.abs(wav).max()
+                if max_val > 1.0:
+                    wav = wav / max_val
+
                 with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp:
                     tmp_path = tmp.name
-                
-                sf.write(tmp_path, wav, 24000)
-                
-                with open(tmp_path, 'rb') as f:
-                    buffer = io.BytesIO(f.read())
-                
-                Path(tmp_path).unlink(missing_ok=True)
-                buffer.seek(0)
+
+                try:
+                    sf.write(tmp_path, wav, samplerate=24000, subtype='PCM_16')
+                    with open(tmp_path, 'rb') as f:
+                        buffer = io.BytesIO(f.read())
+                    buffer.seek(0)
+                    logger.info(f"[{request_id}] ✓ MP3 fallback: Generated WAV")
+                finally:
+                    Path(tmp_path).unlink(missing_ok=True)
+
                 media_type = "audio/wav"
 
         else:
