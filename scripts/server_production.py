@@ -92,6 +92,8 @@ async def startup():
     logger.info("=" * 80)
     logger.info("✓ SERVER READY")
     logger.info("=" * 80)
+    port = int(os.getenv("PORT", os.getenv("CHATTERBOX_PORT", 8004)))
+    
     logger.info("")
     logger.info("API Endpoints:")
     logger.info("  POST /api/tts         - Generate TTS")
@@ -100,7 +102,7 @@ async def startup():
     logger.info("  GET  /docs            - API documentation")
     logger.info("")
     logger.info("Example:")
-    logger.info('  curl -X POST http://localhost:8888/api/tts \\')
+    logger.info(f'  curl -X POST http://localhost:{port}/api/tts \\')
     logger.info('    -H "Content-Type: application/json" \\')
     logger.info('    -d \'{"text": "Hello world", "voice": "emily-en-us"}\' \\')
     logger.info('    --output hello.wav')
@@ -128,8 +130,19 @@ async def root():
 
 # Main
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8888))
-    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", os.getenv("CHATTERBOX_PORT", 8004)))
+    host = os.getenv("HOST", os.getenv("CHATTERBOX_HOST", "0.0.0.0"))
+    
+    # CRITICAL: Must bind to 0.0.0.0 for RunPod/Docker deployment
+    if host == "localhost" or host == "127.0.0.1":
+        logger.warning(f"⚠ Host is set to {host}, changing to 0.0.0.0 for external access")
+        host = "0.0.0.0"
+    
+    logger.info("=" * 80)
+    logger.info(f"[STARTUP] Server binding to {host}:{port}")
+    logger.info(f"[STARTUP] Working directory: {os.getcwd()}")
+    logger.info(f"[STARTUP] Python path: {sys.path[:3]}")
+    logger.info("=" * 80)
 
     uvicorn.run(
         app,

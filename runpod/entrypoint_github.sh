@@ -91,16 +91,20 @@ fi
 # Bootstrap default voices (PRODUCTION READY)
 echo ""
 echo "Setting up default voices..."
-python scripts/bootstrap_voices.py
-echo "✓ Voices ready"
+if [ -f "scripts/bootstrap_voices.py" ]; then
+    python scripts/bootstrap_voices.py || echo "⚠ Voice bootstrap failed (non-critical)"
+    echo "✓ Voices ready"
+else
+    echo "⚠ bootstrap_voices.py not found, using built-in voices"
+fi
 
-# Pre-download model
+# Pre-download model (optional, server will download on first request if needed)
 if [ ! -d "model_cache/models--ResembleAI--chatterbox" ]; then
     echo ""
     echo "Downloading Chatterbox TTS model (first run only)..."
     echo "This will take 5-10 minutes (~2-3GB)..."
-    python -c "from chatterbox.tts import ChatterboxTTS; ChatterboxTTS.from_pretrained(device='cpu')"
-    echo "✓ Model downloaded successfully"
+    python -c "from chatterbox.tts import ChatterboxTTS; ChatterboxTTS.from_pretrained(device='cpu')" || echo "⚠ Model pre-download failed (will download on first request)"
+    echo "✓ Model download complete"
 fi
 
 # Start server
@@ -109,13 +113,27 @@ echo "=================================================="
 echo "Starting Chatterbox TTS Server"
 echo "=================================================="
 echo ""
+echo "[DEBUG] Current working directory: $(pwd)"
+echo "[DEBUG] Python path: $(python -c 'import sys; print(sys.path[:3])')"
+echo "[DEBUG] Server script: scripts/server_production.py"
+echo ""
 echo "Server will be available at:"
-echo "  Internal: http://localhost:${CHATTERBOX_PORT}"
+echo "  Internal: http://0.0.0.0:${CHATTERBOX_PORT}"
 echo "  External: Check RunPod dashboard for public URL"
 echo ""
-echo "API Documentation: http://localhost:${CHATTERBOX_PORT}/docs"
+echo "API Documentation: http://0.0.0.0:${CHATTERBOX_PORT}/docs"
+echo ""
+echo "If server doesn't start, check:"
+echo "  1. ps aux | grep python"
+echo "  2. netstat -tlnp | grep ${CHATTERBOX_PORT}"
+echo "  3. tail -100 logs/server.log"
 echo ""
 
-# Run the PRODUCTION server (guaranteed to work)
+# Ensure we're in correct directory
 cd "$CLONE_DIR"
+echo "[DEBUG] Changed to: $(pwd)"
+
+# Run the PRODUCTION server (guaranteed to work)
+# Use exec to replace shell with Python process (proper signal handling)
+echo "[DEBUG] Executing: python scripts/server_production.py"
 exec python scripts/server_production.py

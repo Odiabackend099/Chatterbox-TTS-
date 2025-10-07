@@ -185,45 +185,55 @@ async def startup_event():
     for directory in ['outputs', 'logs', 'model_cache']:
         Path(directory).mkdir(exist_ok=True)
     
-    # Initialize database connection pool
+    # Initialize database connection pool (OPTIONAL - graceful degradation)
     try:
-        db_config = config['database']
-        dsn = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
-        
-        app.state.pg = await asyncpg.create_pool(
-            dsn=dsn,
-            min_size=2,
-            max_size=10,
-            command_timeout=60
-        )
-        logger.info("✓ PostgreSQL connection pool initialized")
+        db_config = config.get('database', {})
+        if db_config.get('host') and db_config.get('password'):
+            dsn = f"postgresql://{db_config['user']}:{db_config['password']}@{db_config['host']}:{db_config['port']}/{db_config['database']}"
+            
+            app.state.pg = await asyncpg.create_pool(
+                dsn=dsn,
+                min_size=2,
+                max_size=10,
+                command_timeout=60,
+                timeout=5  # 5 second timeout for connection attempts
+            )
+            logger.info("✓ PostgreSQL connection pool initialized")
+        else:
+            logger.warning("⚠ Database config incomplete, running without database")
+            app.state.pg = None
     except Exception as e:
-        logger.error(f"Failed to initialize database pool: {e}")
-        logger.error("Server will start but authentication will not work")
+        logger.warning(f"Database unavailable, continuing without authentication: {e}")
         app.state.pg = None
     
-    # Initialize Redis connection
+    # Initialize Redis connection (OPTIONAL - graceful degradation)
     try:
-        redis_config = config['redis']
-        app.state.redis = await aioredis.from_url(
-            f"redis://{redis_config['host']}:{redis_config['port']}/{redis_config['db']}",
-            encoding="utf-8",
-            decode_responses=True
-        )
-        # Test connection
-        await app.state.redis.ping()
-        logger.info("✓ Redis connection initialized")
+        redis_config = config.get('redis', {})
+        if redis_config.get('host'):
+            app.state.redis = await aioredis.from_url(
+                f"redis://{redis_config['host']}:{redis_config['port']}/{redis_config['db']}",
+                encoding="utf-8",
+                decode_responses=True,
+                socket_timeout=5,
+                socket_connect_timeout=5
+            )
+            # Test connection
+            await app.state.redis.ping()
+            logger.info("✓ Redis connection initialized")
+        else:
+            logger.warning("⚠ Redis config incomplete, running without cache")
+            app.state.redis = None
     except Exception as e:
-        logger.error(f"Failed to initialize Redis: {e}")
-        logger.error("Server will start but rate limiting will not work")
+        logger.warning(f"Redis unavailable, continuing without rate limiting: {e}")
         app.state.redis = None
     
-    # Add authentication middleware (only if database is available)
+    # Add authentication middleware (only if database AND redis are available)
     if app.state.pg and app.state.redis:
         app.add_middleware(APIKeyMiddleware, pool=app.state.pg, redis_client=app.state.redis)
         logger.info("✓ API key authentication middleware enabled")
     else:
-        logger.warning("⚠ Authentication middleware disabled (database/redis unavailable)")
+        logger.warning("⚠ Authentication middleware disabled - running in open mode")
+        logger.warning("⚠ All endpoints accessible without API keys")
 
     # Initialize TTS model
     try:
@@ -628,6 +638,13 @@ async def list_voices():
 if __name__ == "__main__":
     port = int(os.getenv('CHATTERBOX_PORT', config['server']['port']))
     host = os.getenv('CHATTERBOX_HOST', config['server']['host'])
+    
+    # CRITICAL: Must bind to 0.0.0.0 for RunPod/Docker deployment
+    if host == "localhost" or host == "127.0.0.1":
+        logger.warning(f"⚠ Host is set to {host}, changing to 0.0.0.0 for external access")
+        host = "0.0.0.0"
+    
+    logger.info(f"Starting server on {host}:{port}")
 
     uvicorn.run(
         app,
