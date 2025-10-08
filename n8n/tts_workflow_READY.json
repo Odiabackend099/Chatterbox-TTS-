@@ -29,8 +29,8 @@
             },
             {
               "id": "voice-assignment",
-              "name": "voice_id",
-              "value": "={{ $json.body?.voice_id || $json.voice_id || 'naija_female' }}",
+              "name": "voice",
+              "value": "={{ $json.body?.voice || $json.voice || 'emily-en-us' }}",
               "type": "string"
             }
           ]
@@ -47,22 +47,10 @@
       "parameters": {
         "method": "POST",
         "url": "https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "httpHeaderAuth",
+        "authentication": "none",
         "sendBody": true,
-        "specifyBody": "multipart-form-data",
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "text",
-              "value": "={{ $json.text }}"
-            },
-            {
-              "name": "voice_id",
-              "value": "={{ $json.voice_id }}"
-            }
-          ]
-        },
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({text: $json.text, voice: $json.voice || 'emily-en-us'}) }}",
         "options": {
           "timeout": 30000,
           "response": {
@@ -87,13 +75,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [640, 280],
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "{{ $credentials.httpHeaderAuth }}",
-          "name": "TTS Bearer Auth"
-        }
-      },
-      "notes": "✅ RunPod URL already configured!\nPod ID: a288y3vpbfxwkk\n\nMake sure 'TTS Bearer Auth' credential is created with your API key."
+      "notes": "✅ RunPod URL configured!\nPod ID: a288y3vpbfxwkk\nEndpoint: /api/tts\nFormat: JSON\nNo authentication required"
     },
     {
       "parameters": {
