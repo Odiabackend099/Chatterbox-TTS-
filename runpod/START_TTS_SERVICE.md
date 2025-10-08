@@ -80,8 +80,8 @@ curl http://localhost:8004/health
 Once running, your service will be available at:
 
 ```
-Health: https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
-TTS:    https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize
+Health: https://a288y3vpbfxwkk-8888.proxy.runpod.net/health
+TTS:    https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts
 ```
 
 ---
@@ -92,10 +92,10 @@ After starting the service, test from your local terminal:
 
 ```bash
 # Health check
-curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
+curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/health
 
 # TTS test
-curl -X POST "https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize" \
+curl -X POST "https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts" \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=Hello from Nigeria!" \
   -F "voice_id=naija_female" \
@@ -159,7 +159,7 @@ curl http://localhost:8004/health
 
 echo ""
 echo "✅ Setup complete!"
-echo "Service running at: https://a288y3vpbfxwkk-8004.proxy.runpod.net"
+echo "Service running at: https://a288y3vpbfxwkk-8888.proxy.runpod.net"
 ```
 
 ---
@@ -239,7 +239,7 @@ watch -n 1 nvidia-smi
 time curl http://localhost:8004/health
 
 # TTS request (will take a few seconds)
-time curl -X POST http://localhost:8004/synthesize \
+time curl -X POST http://localhost:8004/api/tts \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=Test" \
   -F "voice_id=naija_female" \
@@ -353,6 +353,6 @@ Test from your local machine:
 
 **Your Pod**: `a288y3vpbfxwkk`  
 **SSH**: `ssh a288y3vpbfxwkk-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519`  
-**URL**: `https://a288y3vpbfxwkk-8004.proxy.runpod.net`  
+**URL**: `https://a288y3vpbfxwkk-8888.proxy.runpod.net`  
 **Status**: Ready to start service! 🚀
 

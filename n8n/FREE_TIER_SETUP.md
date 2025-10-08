@@ -56,12 +56,12 @@ After importing the workflow, you need to manually update these values:
 1. Click on **HTTP Request** node
 2. Update URL from:
    ```
-   {{ $env.TTS_BASE_URL }}/synthesize
+   {{ $env.TTS_BASE_URL }}/api/tts
    ```
    
    To your actual RunPod URL:
    ```
-   https://YOUR-POD-ID-8888.proxy.runpod.net/synthesize
+   https://YOUR-POD-ID-8888.proxy.runpod.net/api/tts
    ```
 
 3. Make sure **Credential** is set to `TTS Bearer Auth`
@@ -138,7 +138,7 @@ Save this as `tts_workflow_free_tier.json`:
     {
       "parameters": {
         "method": "POST",
-        "url": "https://YOUR-POD-ID-8888.proxy.runpod.net/synthesize",
+        "url": "https://YOUR-POD-ID-8888.proxy.runpod.net/api/tts",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "httpHeaderAuth",
         "sendBody": true,
@@ -306,14 +306,14 @@ Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 
 ### In HTTP Request Node URL:
 ```
-https://YOUR-POD-ID-8888.proxy.runpod.net/synthesize
+https://YOUR-POD-ID-8888.proxy.runpod.net/api/tts
 ```
 
 Replace `YOUR-POD-ID` with your actual RunPod pod ID.
 
 **Example**:
 ```
-https://abc123def456-8888.proxy.runpod.net/synthesize
+https://abc123def456-8888.proxy.runpod.net/api/tts
 ```
 
 ---
@@ -351,7 +351,7 @@ If you later upgrade to n8n self-hosted or paid tier:
 
 3. **Update HTTP Request URL** to:
    ```
-   {{ $env.TTS_BASE_URL }}/synthesize
+   {{ $env.TTS_BASE_URL }}/api/tts
    ```
 
 4. **Update Set node voice_id** to:

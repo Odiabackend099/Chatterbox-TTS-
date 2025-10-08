@@ -43,7 +43,7 @@ source .env.tts
 
 **Usage:**
 ```bash
-curl -X POST "$TTS_BASE_URL/synthesize" \
+curl -X POST "$TTS_BASE_URL/api/tts" \
   -H "Authorization: Bearer $TTS_API_KEY" \
   -F "text=Hello from Nigeria!" \
   -F "voice_id=naija_female" \
@@ -150,7 +150,7 @@ This tests:
 
 **Test Direct API:**
 ```bash
-curl -X POST "$TTS_BASE_URL/synthesize" \
+curl -X POST "$TTS_BASE_URL/api/tts" \
   -H "Authorization: Bearer $TTS_API_KEY" \
   -F "text=Testing TTS service" \
   -F "voice_id=naija_female" \
@@ -197,7 +197,7 @@ async function generateSpeech(text, voiceId = 'naija_female') {
   formData.append('text', text);
   formData.append('voice_id', voiceId);
 
-  const response = await fetch(`${TTS_BASE_URL}/synthesize`, {
+  const response = await fetch(`${TTS_BASE_URL}/api/tts`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${TTS_API_KEY}`
@@ -225,7 +225,7 @@ TTS_BASE_URL = os.environ['TTS_BASE_URL']
 TTS_API_KEY = os.environ['TTS_API_KEY']
 
 async def generate_speech(text: str, voice_id: str = 'naija_female') -> bytes:
-    url = f"{TTS_BASE_URL}/synthesize"
+    url = f"{TTS_BASE_URL}/api/tts"
     headers = {"Authorization": f"Bearer {TTS_API_KEY}"}
     data = {"text": text, "voice_id": voice_id}
     
@@ -250,7 +250,7 @@ $tts_api_key = getenv('TTS_API_KEY');
 function generateSpeech($text, $voiceId = 'naija_female') {
     global $tts_base_url, $tts_api_key;
     
-    $ch = curl_init("$tts_base_url/synthesize");
+    $ch = curl_init("$tts_base_url/api/tts");
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, [
         'text' => $text,
@@ -293,7 +293,7 @@ In the background, call your TTS service:
 
 ```bash
 # Generate audio
-curl -X POST "$TTS_BASE_URL/synthesize" \
+curl -X POST "$TTS_BASE_URL/api/tts" \
   -H "Authorization: Bearer $TTS_API_KEY" \
   -F "text=$CALLER_MESSAGE" \
   -F "voice_id=naija_female" \
@@ -440,7 +440,7 @@ Generate common phrases ahead of time:
 ```bash
 # Pre-generate greetings
 for phrase in "Hello" "Goodbye" "Welcome" "Thank you"; do
-    curl -X POST "$TTS_BASE_URL/synthesize" \
+    curl -X POST "$TTS_BASE_URL/api/tts" \
         -H "Authorization: Bearer $TTS_API_KEY" \
         -F "text=$phrase" \
         -F "voice_id=naija_female" \

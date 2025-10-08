@@ -80,7 +80,7 @@ curl -X POST "https://your-n8n.com/webhook/tts-trigger" \
          │
          ▼
 ┌─────────────────┐
-│ TTS HTTP        │  ← POST to TTS_BASE_URL/synthesize
+│ TTS HTTP        │  ← POST to TTS_BASE_URL/api/tts
 │ Request         │     Auth: Bearer TTS_API_KEY
 │                 │     Response: binary MP3
 └────────┬────────┘

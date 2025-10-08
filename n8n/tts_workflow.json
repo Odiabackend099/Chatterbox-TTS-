@@ -46,7 +46,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.TTS_BASE_URL }}/synthesize",
+        "url": "={{ $env.TTS_BASE_URL }}/api/tts",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "httpHeaderAuth",
         "sendBody": true,

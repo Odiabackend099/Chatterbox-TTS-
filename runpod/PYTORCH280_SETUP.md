@@ -133,7 +133,7 @@ python scripts/server_production.py
 curl http://localhost:8004/health
 
 # Test TTS
-curl -X POST http://localhost:8004/synthesize \
+curl -X POST http://localhost:8004/api/tts \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=Hello from RunPod!" \
   -F "voice_id=naija_female" \
@@ -162,7 +162,7 @@ POD_ID="YOUR-POD-ID"
 curl https://$POD_ID-8004.proxy.runpod.net/health
 
 # TTS test
-curl -X POST "https://$POD_ID-8004.proxy.runpod.net/synthesize" \
+curl -X POST "https://$POD_ID-8004.proxy.runpod.net/api/tts" \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=Hello from Nigeria!" \
   -F "voice_id=naija_female" \

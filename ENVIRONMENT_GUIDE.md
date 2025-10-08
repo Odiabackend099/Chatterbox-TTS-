@@ -74,7 +74,7 @@ source .env.twilio
 ### RunPod TTS
 ```
 Pod ID:      a288y3vpbfxwkk
-URL:         https://a288y3vpbfxwkk-8004.proxy.runpod.net
+URL:         https://a288y3vpbfxwkk-8888.proxy.runpod.net
 API Key:     cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 ```
 
@@ -107,7 +107,7 @@ cp env.*.example .backup/ 2>/dev/null || true
 ### TTS Service
 | Variable | Value | Purpose |
 |----------|-------|---------|
-| `TTS_BASE_URL` | https://a288y3vpbfxwkk-8004.proxy.runpod.net | RunPod TTS endpoint |
+| `TTS_BASE_URL` | https://a288y3vpbfxwkk-8888.proxy.runpod.net | RunPod TTS endpoint |
 | `TTS_API_KEY` | cw_live_gbgRb... | Authentication |
 | `DEFAULT_VOICE_ID` | naija_female | Default voice |
 | `TTS_PORT` | 8004 | Service port |

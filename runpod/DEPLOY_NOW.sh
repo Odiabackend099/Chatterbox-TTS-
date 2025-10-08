@@ -189,7 +189,7 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 
 echo -e "${BLUE}Your TTS Service URLs:${NC}"
 echo -e "  Local:  ${GREEN}http://localhost:8004${NC}"
-echo -e "  Public: ${GREEN}https://a288y3vpbfxwkk-8004.proxy.runpod.net${NC}\n"
+echo -e "  Public: ${GREEN}https://a288y3vpbfxwkk-8888.proxy.runpod.net${NC}\n"
 
 echo -e "${BLUE}Quick Commands:${NC}"
 echo -e "  Check health:  ${YELLOW}curl http://localhost:8004/health${NC}"
@@ -198,7 +198,7 @@ echo -e "  Check process: ${YELLOW}ps aux | grep server_production${NC}"
 echo -e "  Restart:       ${YELLOW}pkill -f server_production && python scripts/server_production.py &${NC}\n"
 
 echo -e "${BLUE}Test from your local machine:${NC}"
-echo -e "  ${YELLOW}curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health${NC}\n"
+echo -e "  ${YELLOW}curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/health${NC}\n"
 
 echo -e "${GREEN}🎉 Ready to use!${NC}\n"
 

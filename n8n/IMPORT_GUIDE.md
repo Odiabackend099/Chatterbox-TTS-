@@ -184,7 +184,7 @@ Set Node Output:
 }
     ↓
 HTTP Request Input (Form Data):
-POST https://your-pod.runpod.net/synthesize
+POST https://your-pod.runpod.net/api/tts
 Authorization: Bearer cw_demo_12345
 text=Hello from Nigeria!
 voice_id=naija_female
@@ -257,7 +257,7 @@ After **HTTP Request** node:
 2. Verify TTS_API_KEY is valid
 3. Test direct API call:
    ```bash
-   curl $TTS_BASE_URL/synthesize \
+   curl $TTS_BASE_URL/api/tts \
      -H "Authorization: Bearer $TTS_API_KEY" \
      -F "text=Test" --output test.mp3
    ```

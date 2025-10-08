@@ -20,7 +20,7 @@
 Configure with: Webhook
 
 A call comes in:
-  URL: https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
+  URL: https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
   HTTP: POST
 
 Primary handler fails:
@@ -75,17 +75,17 @@ A call comes in:
 | Field | Value |
 |-------|-------|
 | **Configure with** | Webhook |
-| **A call comes in** | `https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice` |
+| **A call comes in** | `https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice` |
 | **HTTP Method** | POST |
 | **Primary handler fails** | (optional) Same URL or leave empty |
-| **Call status changes** | (optional) `https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/status` |
+| **Call status changes** | (optional) `https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/status` |
 
 ### Messaging Configuration (Optional)
 
 | Field | Value |
 |-------|-------|
 | **Configure with** | Webhook |
-| **A message comes in** | `https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/sms` |
+| **A message comes in** | `https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/sms` |
 | **HTTP Method** | POST |
 
 ---
@@ -114,7 +114,7 @@ twilio login
 twilio api:core:calls:create \
   --from=+12184003410 \
   --to=YOUR_PHONE_NUMBER \
-  --url=https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
+  --url=https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
 ```
 
 ---
@@ -176,7 +176,7 @@ A call comes in: https://demo.twilio.com/welcome/voice/
 
 **After**:
 ```
-A call comes in: https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
+A call comes in: https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
 HTTP POST ✓
 ```
 
@@ -191,7 +191,7 @@ A message comes in: https://demo.twilio.com/welcome/sms/reply/
 
 **After**:
 ```
-A message comes in: https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/sms
+A message comes in: https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/sms
 HTTP POST ✓
 ```
 
@@ -217,7 +217,7 @@ Click **"Save configuration"** at the bottom
 twilio api:core:calls:create \
   --from=+12184003410 \
   --to=+1YOUR_PHONE \
-  --url=https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
+  --url=https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
 ```
 
 ### Test SMS (if configured)
@@ -240,7 +240,7 @@ curl -X POST "https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Mes
 **Problem**: Service not found at URL
 
 **Check**:
-1. Is RunPod service running? `curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health`
+1. Is RunPod service running? `curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/health`
 2. Is the URL correct? Should end with `/twilio/voice`
 3. Check RunPod logs
 
@@ -260,7 +260,7 @@ curl -X POST "https://api.twilio.com/2010-04-01/Accounts/$TWILIO_ACCOUNT_SID/Mes
 **Check**:
 1. Is RunPod pod running?
 2. Is port 8004 exposed?
-3. Test directly: `curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health`
+3. Test directly: `curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/health`
 
 ---
 
@@ -274,7 +274,7 @@ Incoming Call
 Twilio receives call
     ↓
 Twilio calls your webhook:
-https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
+https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
     ↓
 Your server responds with TwiML
     ↓
@@ -309,7 +309,7 @@ URL: https://YOUR_NGROK_ID.ngrok.io/twilio/voice
 
 ### Production (RunPod)
 ```
-URL: https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
+URL: https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
 ```
 
 Just update the URL in Twilio console and save.
@@ -322,8 +322,8 @@ Once configured:
 
 ```
 Twilio Number:  (218) 400-3410
-Voice Webhook:  https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
-TTS Service:    https://a288y3vpbfxwkk-8004.proxy.runpod.net
+Voice Webhook:  https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
+TTS Service:    https://a288y3vpbfxwkk-8888.proxy.runpod.net
 Status:         Ready for calls! 🎉
 ```
 

@@ -41,12 +41,12 @@ Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 1. Click on the **HTTP Request** node (you'll see a note)
 2. Change the URL from:
    ```
-   https://YOUR-POD-ID-8888.proxy.runpod.net/synthesize
+   https://YOUR-POD-ID-8888.proxy.runpod.net/api/tts
    ```
    
    To your actual RunPod URL (example):
    ```
-   https://abc123def456-8888.proxy.runpod.net/synthesize
+   https://abc123def456-8888.proxy.runpod.net/api/tts
    ```
 
 3. Click **Save**

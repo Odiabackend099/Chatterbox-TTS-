@@ -99,7 +99,7 @@ curl -X POST "https://your-n8n.com/webhook/tts-trigger" \
 Test the key directly against your RunPod TTS:
 
 ```bash
-curl -X POST "https://your-pod-id-8888.proxy.runpod.net/synthesize" \
+curl -X POST "https://your-pod-id-8888.proxy.runpod.net/api/tts" \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=Hello from Nigeria!" \
   -F "voice_id=naija_female" \

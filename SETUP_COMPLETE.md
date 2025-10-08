@@ -9,7 +9,7 @@
 ### 1. **RunPod TTS Service**
 ```
 Pod ID:       a288y3vpbfxwkk
-URL:          https://a288y3vpbfxwkk-8004.proxy.runpod.net
+URL:          https://a288y3vpbfxwkk-8888.proxy.runpod.net
 API Key:      cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 Status:       Ready (needs to be started on RunPod)
 ```

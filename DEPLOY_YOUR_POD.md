@@ -63,7 +63,7 @@ The script will:
 
 Your TTS Service URLs:
   Local:  http://localhost:8004
-  Public: https://a288y3vpbfxwkk-8004.proxy.runpod.net
+  Public: https://a288y3vpbfxwkk-8888.proxy.runpod.net
 
 🎉 Ready to use!
 ```
@@ -91,7 +91,7 @@ ps aux | grep server_production
 
 ```bash
 # Test health endpoint
-curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
+curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/health
 
 # Quick TTS test with auto-play!
 ./test_scripts/quick_test.sh
@@ -122,7 +122,7 @@ After TTS is working, update Twilio:
 2. Click: **(218) 400-3410**
 3. Under **Voice Configuration** → **A call comes in**:
    ```
-   URL: https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
+   URL: https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
    HTTP: POST
    ```
 4. Click **Save configuration**
@@ -189,11 +189,11 @@ ps aux | grep server_production
 ## 🎯 Complete System URLs
 
 ```
-TTS Service:    https://a288y3vpbfxwkk-8004.proxy.runpod.net
-Health Check:   https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
-TTS Endpoint:   https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize
-Twilio Voice:   https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
-Twilio SMS:     https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/sms
+TTS Service:    https://a288y3vpbfxwkk-8888.proxy.runpod.net
+Health Check:   https://a288y3vpbfxwkk-8888.proxy.runpod.net/health
+TTS Endpoint:   https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts
+Twilio Voice:   https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
+Twilio SMS:     https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/sms
 ```
 
 ---

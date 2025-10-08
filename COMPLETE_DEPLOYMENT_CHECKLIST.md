@@ -31,7 +31,7 @@ curl http://localhost:8004/health
 ### Step 2.1: Test Health Endpoint
 ```bash
 # On your Mac
-curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
+curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/health
 ```
 
 ### Step 2.2: Test TTS Generation
@@ -52,7 +52,7 @@ curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
 2. Click: **(218) 400-3410**
 3. Scroll to **Voice Configuration**
 4. Change:
-   - **A call comes in**: `https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice`
+   - **A call comes in**: `https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice`
    - **HTTP**: POST
 5. Click **Save configuration**
 
@@ -84,7 +84,7 @@ You should hear:
 
 In n8n (Settings → Environments):
 ```
-TTS_BASE_URL=https://a288y3vpbfxwkk-8004.proxy.runpod.net
+TTS_BASE_URL=https://a288y3vpbfxwkk-8888.proxy.runpod.net
 TTS_API_KEY=cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 DEFAULT_VOICE_ID=naija_female
 ```
@@ -117,7 +117,7 @@ curl -X POST "https://your-n8n.com/webhook/tts-trigger" \
 
 ### ✅ System Status Check
 
-- [ ] **RunPod TTS**: `curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health` → 200 OK
+- [ ] **RunPod TTS**: `curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/health` → 200 OK
 - [ ] **Local TTS Test**: `./test_scripts/quick_test.sh` → Audio plays
 - [ ] **Twilio Voice**: Call (218) 400-3410 → Greeting plays
 - [ ] **Twilio Options**: Press 1, 2, 3 → Different messages
@@ -151,9 +151,9 @@ curl -X POST "https://your-n8n.com/webhook/tts-trigger" \
 ## 📞 Your Live URLs
 
 ```
-TTS Service:    https://a288y3vpbfxwkk-8004.proxy.runpod.net
-TTS Health:     https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
-Twilio Webhook: https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
+TTS Service:    https://a288y3vpbfxwkk-8888.proxy.runpod.net
+TTS Health:     https://a288y3vpbfxwkk-8888.proxy.runpod.net/health
+Twilio Webhook: https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
 Twilio Number:  (218) 400-3410 / +12184003410
 ```
 

@@ -46,7 +46,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize",
+        "url": "https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "httpHeaderAuth",
         "sendBody": true,

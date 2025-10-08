@@ -121,7 +121,7 @@ Before moving forward, verify each component:
 
 - [ ] **Direct API call works**
   ```bash
-  curl -X POST "$TTS_BASE_URL/synthesize" \
+  curl -X POST "$TTS_BASE_URL/api/tts" \
     -H "Authorization: Bearer $TTS_API_KEY" \
     -F "text=Test" \
     --output test.mp3

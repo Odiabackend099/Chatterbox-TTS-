@@ -57,17 +57,17 @@ After deployment:
 
 **Public URL** (use this):
 ```
-https://a288y3vpbfxwkk-8004.proxy.runpod.net
+https://a288y3vpbfxwkk-8888.proxy.runpod.net
 ```
 
 **Health Check**:
 ```
-https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
+https://a288y3vpbfxwkk-8888.proxy.runpod.net/health
 ```
 
 **TTS Endpoint**:
 ```
-https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize
+https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts
 ```
 
 ---
@@ -91,7 +91,7 @@ ps aux | grep server_production
 
 ```bash
 # Health check
-curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
+curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/health
 
 # Test TTS (auto-play!)
 ./test_scripts/quick_test.sh
@@ -188,7 +188,7 @@ cd /Users/odiadev/chatterbox-twilio-integration
 ### Manual Test:
 
 ```bash
-curl -X POST "https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize" \
+curl -X POST "https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts" \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=Hello from RunPod!" \
   -F "voice_id=naija_female" \
@@ -315,7 +315,7 @@ kill <PID>
 Once deployed:
 
 ```
-✅ RunPod TTS:  https://a288y3vpbfxwkk-8004.proxy.runpod.net
+✅ RunPod TTS:  https://a288y3vpbfxwkk-8888.proxy.runpod.net
 ✅ n8n Ready:   Import n8n/tts_workflow_READY.json
 ✅ Twilio:      Configure webhooks (see TWILIO_INTEGRATION.md)
 ✅ Tests:       ./test_scripts/quick_test.sh

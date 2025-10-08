@@ -133,7 +133,7 @@ audio_bytes = await generate_tts(text, "naija_female")
 TWILIO_ACCOUNT_SID=YOUR_TWILIO_ACCOUNT_SID
 TWILIO_AUTH_TOKEN=YOUR_TWILIO_AUTH_TOKEN
 TWILIO_PHONE_NUMBER=YOUR_TWILIO_NUMBER
-TTS_BASE_URL=https://a288y3vpbfxwkk-8004.proxy.runpod.net
+TTS_BASE_URL=https://a288y3vpbfxwkk-8888.proxy.runpod.net
 TTS_API_KEY=cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 ```
 
@@ -249,7 +249,7 @@ heroku create your-app-name
 # Set environment variables
 heroku config:set TWILIO_ACCOUNT_SID=YOUR_TWILIO_ACCOUNT_SID
 heroku config:set TWILIO_AUTH_TOKEN=YOUR_TWILIO_AUTH_TOKEN
-heroku config:set TTS_BASE_URL=https://a288y3vpbfxwkk-8004.proxy.runpod.net
+heroku config:set TTS_BASE_URL=https://a288y3vpbfxwkk-8888.proxy.runpod.net
 heroku config:set TTS_API_KEY=cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 
 # Deploy
@@ -299,7 +299,7 @@ curl -X POST http://localhost:8080/twilio/voice \
 
 ```bash
 # Direct TTS test
-curl -X POST "https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize" \
+curl -X POST "https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts" \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=Test message for Twilio" \
   -F "voice_id=naija_female" \

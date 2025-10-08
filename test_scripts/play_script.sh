@@ -19,7 +19,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 # Configuration
-TTS_URL="https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize"
+TTS_URL="https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts"
 API_KEY="cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU"
 OUTPUT_DIR="./outputs/audio_samples"
 DEFAULT_SCRIPT="test_scripts/one_minute_script.txt"

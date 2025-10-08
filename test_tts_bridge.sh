@@ -125,11 +125,11 @@ print_header "🎤 Test 2: Direct TTS API Call (Simple)"
 
 OUTPUT_FILE="$OUTPUT_DIR/direct_simple.mp3"
 
-print_info "Calling: POST $TTS_BASE_URL/synthesize"
+print_info "Calling: POST $TTS_BASE_URL/api/tts"
 print_info "Text: 'Hello from Nigeria!'"
 print_info "Voice: $DEFAULT_VOICE_ID"
 
-if curl -X POST "${TTS_BASE_URL}/synthesize" \
+if curl -X POST "${TTS_BASE_URL}/api/tts" \
     -H "Authorization: Bearer ${TTS_API_KEY}" \
     -F "text=Hello from Nigeria!" \
     -F "voice_id=${DEFAULT_VOICE_ID}" \
@@ -151,11 +151,11 @@ print_header "🎤 Test 3: Direct TTS API Call (Long Text)"
 OUTPUT_FILE="$OUTPUT_DIR/direct_long.mp3"
 LONG_TEXT="Welcome to Chatterbox TTS service. This is a longer text to test the synthesizer with multiple sentences. We support various Nigerian accents and voices. Thank you for using our service!"
 
-print_info "Calling: POST $TTS_BASE_URL/synthesize"
+print_info "Calling: POST $TTS_BASE_URL/api/tts"
 print_info "Text length: ${#LONG_TEXT} characters"
 print_info "Voice: $DEFAULT_VOICE_ID"
 
-if curl -X POST "${TTS_BASE_URL}/synthesize" \
+if curl -X POST "${TTS_BASE_URL}/api/tts" \
     -H "Authorization: Bearer ${TTS_API_KEY}" \
     -F "text=$LONG_TEXT" \
     -F "voice_id=${DEFAULT_VOICE_ID}" \
@@ -177,11 +177,11 @@ print_header "🎤 Test 4: Direct TTS API Call (Different Voice)"
 OUTPUT_FILE="$OUTPUT_DIR/direct_voice_naija_male.mp3"
 VOICE_ID="naija_male"
 
-print_info "Calling: POST $TTS_BASE_URL/synthesize"
+print_info "Calling: POST $TTS_BASE_URL/api/tts"
 print_info "Text: 'Testing male voice'"
 print_info "Voice: $VOICE_ID"
 
-if curl -X POST "${TTS_BASE_URL}/synthesize" \
+if curl -X POST "${TTS_BASE_URL}/api/tts" \
     -H "Authorization: Bearer ${TTS_API_KEY}" \
     -F "text=Testing male voice" \
     -F "voice_id=${VOICE_ID}" \
@@ -270,7 +270,7 @@ print_header "🔐 Test 8: Error Handling (Invalid API Key)"
 
 print_info "Testing with invalid API key..."
 
-HTTP_CODE=$(curl -X POST "${TTS_BASE_URL}/synthesize" \
+HTTP_CODE=$(curl -X POST "${TTS_BASE_URL}/api/tts" \
     -H "Authorization: Bearer invalid_key_12345" \
     -F "text=This should fail" \
     -F "voice_id=${DEFAULT_VOICE_ID}" \
@@ -291,7 +291,7 @@ print_header "📝 Test 9: Error Handling (Missing Text)"
 
 print_info "Testing with missing text parameter..."
 
-HTTP_CODE=$(curl -X POST "${TTS_BASE_URL}/synthesize" \
+HTTP_CODE=$(curl -X POST "${TTS_BASE_URL}/api/tts" \
     -H "Authorization: Bearer ${TTS_API_KEY}" \
     -F "voice_id=${DEFAULT_VOICE_ID}" \
     --silent --output /dev/null \

@@ -39,7 +39,7 @@ This creates 5 audio samples in `outputs/audio_samples/`:
 
 ```bash
 # Female voice
-curl -X POST "https://sbwpfh7exfn63d-8888.proxy.runpod.net/synthesize" \
+curl -X POST "https://sbwpfh7exfn63d-8888.proxy.runpod.net/api/tts" \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=$(cat test_scripts/one_minute_script.txt)" \
   -F "voice_id=naija_female" \

@@ -45,22 +45,22 @@ New Pod ID: a288y3vpbfxwkk  ✅
 
 **Base URL**:
 ```
-https://a288y3vpbfxwkk-8004.proxy.runpod.net
+https://a288y3vpbfxwkk-8888.proxy.runpod.net
 ```
 
 **Health Check**:
 ```
-https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
+https://a288y3vpbfxwkk-8888.proxy.runpod.net/health
 ```
 
 **TTS Endpoint**:
 ```
-https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize
+https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts
 ```
 
 **Twilio Webhook**:
 ```
-https://a288y3vpbfxwkk-8004.proxy.runpod.net/twilio/voice
+https://a288y3vpbfxwkk-8888.proxy.runpod.net/twilio/voice
 ```
 
 ---
@@ -99,7 +99,7 @@ From your Mac:
 
 ```bash
 # Health check
-curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
+curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/health
 
 # Quick TTS test with auto-play
 ./test_scripts/quick_test.sh
