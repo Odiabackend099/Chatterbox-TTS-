@@ -8,8 +8,8 @@
 
 ### RunPod Details
 ```
-Pod ID:  bh1ki2a4eg8ufz
-URL:     https://bh1ki2a4eg8ufz-8004.proxy.runpod.net
+Pod ID:  a288y3vpbfxwkk
+URL:     https://a288y3vpbfxwkk-8004.proxy.runpod.net
 ```
 
 ### API Key (Production Key #1)
@@ -80,10 +80,10 @@ First, verify your RunPod TTS is running:
 
 ```bash
 # Health check
-curl https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/health
+curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
 
 # Direct TTS test
-curl -X POST "https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/synthesize" \
+curl -X POST "https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize" \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=Hello from Nigeria!" \
   -F "voice_id=naija_female" \
@@ -104,7 +104,7 @@ Header Value: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 
 ### For HTTP Request Node (already configured):
 ```
-URL: https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/synthesize
+URL: https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize
 Method: POST
 Body Type: multipart-form-data
 Parameters:
@@ -124,7 +124,7 @@ curl -X POST "https://sbwpfh7exfn63d-8888.proxy.runpod.net/synthesize" \
 
 ### For .env.tts (local testing):
 ```bash
-TTS_BASE_URL=https://bh1ki2a4eg8ufz-8004.proxy.runpod.net
+TTS_BASE_URL=https://a288y3vpbfxwkk-8004.proxy.runpod.net
 TTS_API_KEY=cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 DEFAULT_VOICE_ID=naija_female
 ```

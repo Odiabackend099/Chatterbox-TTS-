@@ -46,7 +46,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/synthesize",
+        "url": "https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "httpHeaderAuth",
         "sendBody": true,
@@ -93,7 +93,7 @@
           "name": "TTS Bearer Auth"
         }
       },
-      "notes": "✅ RunPod URL already configured!\nPod ID: bh1ki2a4eg8ufz\n\nMake sure 'TTS Bearer Auth' credential is created with your API key."
+      "notes": "✅ RunPod URL already configured!\nPod ID: a288y3vpbfxwkk\n\nMake sure 'TTS Bearer Auth' credential is created with your API key."
     },
     {
       "parameters": {

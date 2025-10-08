@@ -1,6 +1,6 @@
 # 🚀 Start TTS Service on RunPod
 
-**Pod ID**: `bh1ki2a4eg8ufz`
+**Pod ID**: `a288y3vpbfxwkk`
 
 ---
 
@@ -10,7 +10,7 @@ You have two SSH options:
 
 ### Option 1: RunPod SSH (Recommended)
 ```bash
-ssh bh1ki2a4eg8ufz-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519
+ssh a288y3vpbfxwkk-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519
 ```
 
 ### Option 2: Direct SSH
@@ -26,7 +26,7 @@ ssh root@157.157.221.29 -p 25348 -i ~/.ssh/id_ed25519
 
 ```bash
 # Use RunPod SSH
-ssh bh1ki2a4eg8ufz-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519
+ssh a288y3vpbfxwkk-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519
 ```
 
 ### Step 2: Setup Project
@@ -80,8 +80,8 @@ curl http://localhost:8004/health
 Once running, your service will be available at:
 
 ```
-Health: https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/health
-TTS:    https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/synthesize
+Health: https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
+TTS:    https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize
 ```
 
 ---
@@ -92,10 +92,10 @@ After starting the service, test from your local terminal:
 
 ```bash
 # Health check
-curl https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/health
+curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
 
 # TTS test
-curl -X POST "https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/synthesize" \
+curl -X POST "https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize" \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=Hello from Nigeria!" \
   -F "voice_id=naija_female" \
@@ -159,7 +159,7 @@ curl http://localhost:8004/health
 
 echo ""
 echo "✅ Setup complete!"
-echo "Service running at: https://bh1ki2a4eg8ufz-8004.proxy.runpod.net"
+echo "Service running at: https://a288y3vpbfxwkk-8004.proxy.runpod.net"
 ```
 
 ---
@@ -351,8 +351,8 @@ Test from your local machine:
 
 ---
 
-**Your Pod**: `bh1ki2a4eg8ufz`  
-**SSH**: `ssh bh1ki2a4eg8ufz-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519`  
-**URL**: `https://bh1ki2a4eg8ufz-8004.proxy.runpod.net`  
+**Your Pod**: `a288y3vpbfxwkk`  
+**SSH**: `ssh a288y3vpbfxwkk-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519`  
+**URL**: `https://a288y3vpbfxwkk-8004.proxy.runpod.net`  
 **Status**: Ready to start service! 🚀
 

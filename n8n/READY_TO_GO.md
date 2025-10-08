@@ -7,8 +7,8 @@
 ## ✅ Your Configuration
 
 ```
-RunPod Pod ID:  bh1ki2a4eg8ufz
-RunPod URL:     https://bh1ki2a4eg8ufz-8004.proxy.runpod.net
+RunPod Pod ID:  a288y3vpbfxwkk
+RunPod URL:     https://a288y3vpbfxwkk-8004.proxy.runpod.net
 API Key:        cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 Default Voice:  naija_female
 ```
@@ -49,7 +49,7 @@ Select: **`tts_workflow_READY.json`**
 
 ```bash
 # First, verify your RunPod is running:
-curl https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/health
+curl https://a288y3vpbfxwkk-8004.proxy.runpod.net/health
 
 # Then test n8n (replace with your actual n8n webhook URL):
 curl -X POST "https://your-n8n.com/webhook/tts-trigger" \
@@ -75,7 +75,7 @@ curl -X POST "https://your-n8n.com/webhook/tts-trigger" \
 
 ```bash
 # Test your TTS directly (no n8n needed):
-curl -X POST "https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/synthesize" \
+curl -X POST "https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize" \
   -H "Authorization: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU" \
   -F "text=Hello from Nigeria!" \
   -F "voice_id=naija_female" \
@@ -89,7 +89,7 @@ curl -X POST "https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/synthesize" \
 Create `.env.tts` file:
 
 ```bash
-TTS_BASE_URL=https://bh1ki2a4eg8ufz-8004.proxy.runpod.net
+TTS_BASE_URL=https://a288y3vpbfxwkk-8004.proxy.runpod.net
 TTS_API_KEY=cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 DEFAULT_VOICE_ID=naija_female
 ```

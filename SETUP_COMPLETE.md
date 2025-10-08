@@ -8,8 +8,8 @@
 
 ### 1. **RunPod TTS Service**
 ```
-Pod ID:       bh1ki2a4eg8ufz
-URL:          https://bh1ki2a4eg8ufz-8004.proxy.runpod.net
+Pod ID:       a288y3vpbfxwkk
+URL:          https://a288y3vpbfxwkk-8004.proxy.runpod.net
 API Key:      cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 Status:       Ready (needs to be started on RunPod)
 ```
@@ -116,7 +116,7 @@ Key #5 (Reserve):   cw_live_HpqXxNWGY6N4EO5ZP4nS6Vqo1shGUS-63HTIZh_EWVY
 
 ### RunPod SSH Access
 ```bash
-ssh bh1ki2a4eg8ufz-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519
+ssh a288y3vpbfxwkk-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519
 ```
 
 ---
@@ -139,7 +139,7 @@ ssh bh1ki2a4eg8ufz-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519
 
 ```bash
 # SSH into RunPod
-ssh bh1ki2a4eg8ufz-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519
+ssh a288y3vpbfxwkk-644117ed@ssh.runpod.io -i ~/.ssh/id_ed25519
 
 # Start TTS service
 cd /workspace
@@ -272,7 +272,7 @@ env | grep TWILIO
 
 **Project**: Chatterbox TTS  
 **Status**: ✅ Complete and Ready  
-**Pod**: bh1ki2a4eg8ufz  
+**Pod**: a288y3vpbfxwkk  
 **Phone**: YOUR_TWILIO_NUMBER  
 **Date**: 2025-10-08
 

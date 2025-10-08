@@ -32,7 +32,7 @@ TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 
-TTS_BASE_URL = os.getenv("TTS_BASE_URL", "https://bh1ki2a4eg8ufz-8004.proxy.runpod.net")
+TTS_BASE_URL = os.getenv("TTS_BASE_URL", "https://a288y3vpbfxwkk-8004.proxy.runpod.net")
 TTS_API_KEY = os.getenv("TTS_API_KEY", "cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU")
 DEFAULT_VOICE_ID = os.getenv("DEFAULT_VOICE_ID", "naija_female")
 

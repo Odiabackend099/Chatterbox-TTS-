@@ -15,7 +15,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 # Configuration
-TTS_URL="https://bh1ki2a4eg8ufz-8004.proxy.runpod.net/synthesize"
+TTS_URL="https://a288y3vpbfxwkk-8004.proxy.runpod.net/synthesize"
 API_KEY="cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU"
 OUTPUT_DIR="./outputs/audio_samples"
 
