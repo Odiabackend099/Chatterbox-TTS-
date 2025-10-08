@@ -42,9 +42,13 @@ llm:
   temperature: 0.7
 
 security:
-  enable_auth: false
+  enable_auth: false  # Set to true for production API key authentication
   username: admin
-  password: changeme123
+  password: ""  # DEPRECATED: Use environment variables instead
   enable_cors: true
   allowed_origins:
-    - "*"
+    - "http://localhost:3000"  # Frontend dev server
+    - "http://localhost:8004"  # API docs
+    # Add your production domains here for production deployment:
+    # - "https://yourdomain.com"
+    # - "https://app.yourdomain.com"

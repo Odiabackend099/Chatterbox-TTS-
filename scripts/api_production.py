@@ -85,12 +85,24 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
 
     try:
         # Generate audio using Chatterbox TTS
+        import numpy as np
+        import torch
+        
         wav = tts_model.generate(
             text=payload.text,
             exaggeration=voice_params['exaggeration'],
             temperature=voice_params['temperature'],
             cfg_weight=voice_params['cfg_weight']
         )
+        
+        # Convert torch tensor to numpy if needed
+        if isinstance(wav, torch.Tensor):
+            wav = wav.cpu().numpy()
+        
+        # Ensure it's a 1D float32 array
+        wav = np.array(wav, dtype=np.float32)
+        if len(wav.shape) > 1:
+            wav = wav.flatten()
 
         # Apply speed factor if needed
         if voice_params['speed_factor'] != 1.0:
