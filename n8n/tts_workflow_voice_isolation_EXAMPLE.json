@@ -1,0 +1,238 @@
+{
+  "name": "Chatterbox TTS with Voice Isolation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tts-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook (Receive TTS Request)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "tts-voice-isolation"
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract and prepare TTS request\nconst text = $input.item.json.text || 'Hello world';\nconst voice = $input.item.json.voice || 'naija_female';\nconst sessionId = $input.item.json.session_id || $input.item.json.call_sid || null;\nconst autoDetect = $input.item.json.auto_detect_emotion !== false;\n\n// Log request\nconsole.log(`TTS Request: voice=${voice}, session=${sessionId}, text=${text.substring(0, 50)}...`);\n\nreturn {\n  json: {\n    text: text,\n    voice: voice,\n    session_id: sessionId,\n    auto_detect_emotion: autoDetect,\n    format: 'wav'\n  }\n};"
+      },
+      "name": "Prepare TTS Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.TTS_BASE_URL}}/api/tts",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{$env.TTS_API_KEY}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{$json.text}}"
+            },
+            {
+              "name": "voice",
+              "value": "={{$json.voice}}"
+            },
+            {
+              "name": "session_id",
+              "value": "={{$json.session_id}}"
+            },
+            {
+              "name": "auto_detect_emotion",
+              "value": "={{$json.auto_detect_emotion}}"
+            },
+            {
+              "name": "format",
+              "value": "={{$json.format}}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "name": "Call Chatterbox TTS API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [650, 300],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "chatterbox-tts-auth",
+          "name": "Chatterbox TTS API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract metadata from headers\nconst headers = $input.item.binary?.data?.mimeType?.headers || {};\nconst detectedStyle = headers['x-detected-style'] || 'neutral';\nconst queueStats = headers['x-queue-stats'] || '{}';\nconst generationTime = headers['x-generation-time-ms'] || 'N/A';\nconst sessionId = headers['x-session-id'] || 'global';\n\n// Log synthesis result\nconsole.log(`TTS Complete: style=${detectedStyle}, time=${generationTime}ms, session=${sessionId}`);\nconsole.log(`Queue stats: ${queueStats}`);\n\n// Return audio + metadata\nreturn {\n  json: {\n    success: true,\n    detected_style: detectedStyle,\n    generation_time_ms: generationTime,\n    session_id: sessionId,\n    audio_format: 'wav'\n  },\n  binary: $input.item.binary\n};"
+      },
+      "name": "Process TTS Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "binary",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "audio/wav"
+              },
+              {
+                "name": "X-Detected-Style",
+                "value": "={{$json.detected_style}}"
+              },
+              {
+                "name": "X-Generation-Time-MS",
+                "value": "={{$json.generation_time_ms}}"
+              },
+              {
+                "name": "Content-Disposition",
+                "value": "attachment; filename=\"tts_output.wav\""
+              }
+            ]
+          }
+        }
+      },
+      "name": "Return Audio Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Error handler\nconst error = $input.item.json.error || 'Unknown error';\nconst statusCode = error.includes('Voice busy') ? 429 : 500;\n\nconsole.error(`TTS Error: ${error}`);\n\nreturn {\n  json: {\n    success: false,\n    error: error,\n    status_code: statusCode\n  }\n};"
+      },
+      "name": "Handle Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [650, 500]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}",
+        "options": {
+          "responseCode": "={{$json.status_code}}"
+        }
+      },
+      "name": "Return Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [850, 500]
+    }
+  ],
+  "connections": {
+    "Webhook (Receive TTS Request)": {
+      "main": [
+        [
+          {
+            "node": "Prepare TTS Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare TTS Request": {
+      "main": [
+        [
+          {
+            "node": "Call Chatterbox TTS API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Chatterbox TTS API": {
+      "main": [
+        [
+          {
+            "node": "Process TTS Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process TTS Response": {
+      "main": [
+        [
+          {
+            "node": "Return Audio Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Error": {
+      "main": [
+        [
+          {
+            "node": "Return Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "name": "TTS",
+      "id": "tts-tag"
+    },
+    {
+      "name": "Voice Isolation",
+      "id": "voice-isolation-tag"
+    }
+  ],
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "chatterbox-tts-voice-isolation"
+  },
+  "pinData": {},
+  "versionId": "1.0.0",
+  "description": "Chatterbox TTS workflow with voice isolation and auto emotion detection.\n\nFeatures:\n- Session-based voice queuing (prevents overlap)\n- Auto emotion detection from text\n- Dynamic style adaptation\n- Error handling for busy voices\n\nUsage:\nPOST /webhook/tts-webhook\n{\n  \"text\": \"Sorry for the delay!\",\n  \"voice\": \"support_agent\",\n  \"session_id\": \"call_12345\",\n  \"auto_detect_emotion\": true\n}\n\nEnvironment Variables Required:\n- TTS_BASE_URL: Your Chatterbox TTS endpoint\n- TTS_API_KEY: API key for authentication"
+}

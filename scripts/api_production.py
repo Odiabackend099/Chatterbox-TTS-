@@ -1,19 +1,27 @@
 """
 Production TTS API - WORKS OUT OF THE BOX
 No setup required, no voice files needed
+
+Features:
+- Voice isolation (prevents overlapping calls)
+- Text preprocessing for natural speech
+- Session-based request queuing
+- Auto emotion detection
 """
 
 import time
 import logging
 import uuid
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, HTTPException, Request, Response, Header
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import soundfile as sf
 import io
 
 from voice_manager import get_voice_manager
+from voice_queue import get_voice_queue
+from text_filters import preprocess_for_tts
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +31,13 @@ class TTSRequestProduction(BaseModel):
     text: str
     voice: Optional[str] = None  # Voice slug, e.g., "emily-en-us"
     format: str = "wav"  # wav|mp3|pcm16
+    session_id: Optional[str] = None  # Session ID for voice isolation
     temperature: Optional[float] = None
     exaggeration: Optional[float] = None
     cfg_weight: Optional[float] = None
     speed_factor: Optional[float] = None
+    auto_detect_emotion: Optional[bool] = True  # Auto-detect emotion from text
+    style: Optional[str] = None  # Override style (calm, urgent, apologetic, etc.)
 
 class VoiceListResponse(BaseModel):
     voices: list
@@ -35,18 +46,29 @@ class VoiceListResponse(BaseModel):
 @router.post("/tts", summary="Generate TTS (Production)")
 async def generate_tts_production(request: Request, payload: TTSRequestProduction):
     """
-    Generate TTS audio - PRODUCTION READY
+    Generate TTS audio - PRODUCTION READY with Voice Isolation
 
-    Works immediately with default voices, no setup required.
+    Features:
+    - Auto emotion detection and voice adaptation
+    - Text preprocessing for natural speech
+    - Session-based voice isolation (prevents overlaps)
+    - Queue management with timeout
 
     Example:
     ```json
     {
         "text": "Hello world!",
         "voice": "emily-en-us",
-        "format": "wav"
+        "format": "wav",
+        "session_id": "call_12345",
+        "auto_detect_emotion": true
     }
     ```
+
+    Session Isolation:
+    - If session_id is provided: requests for same session+voice are queued
+    - Different sessions can use same voice simultaneously
+    - Prevents audio overlap in phone calls / multi-user scenarios
     """
     request_id = str(uuid.uuid4())
     start_time = time.time()
@@ -64,50 +86,98 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
 
     tts_model = request.app.state.tts_model
 
-    # Get voice manager
+    # Get managers
     voice_manager = get_voice_manager()
+    voice_queue = get_voice_queue()
 
     # Get voice parameters
     voice_slug = payload.voice or voice_manager.get_default_voice()
     voice_params = voice_manager.get_voice_params(voice_slug)
 
-    # Override with request parameters if provided
+    # Step 1: Preprocess text and detect emotion
+    processed_text, style_params = preprocess_for_tts(
+        payload.text,
+        voice_style=payload.style,
+        auto_detect_emotion=payload.auto_detect_emotion
+    )
+
+    logger.info(
+        f"[{request_id}] Text preprocessed: "
+        f"style={style_params.get('detected_style')}, "
+        f"original_len={len(payload.text)}, "
+        f"processed_len={len(processed_text)}"
+    )
+
+    # Step 2: Merge style params with voice params
+    # Priority: request params > detected style params > voice defaults
     if payload.temperature is not None:
         voice_params['temperature'] = payload.temperature
+    elif 'temperature' not in voice_params and 'temperature' in style_params:
+        voice_params['temperature'] = style_params.get('temperature', voice_params.get('temperature', 0.8))
+
     if payload.exaggeration is not None:
         voice_params['exaggeration'] = payload.exaggeration
+    elif 'exaggeration' in style_params:
+        voice_params['exaggeration'] = style_params['exaggeration']
+
     if payload.cfg_weight is not None:
         voice_params['cfg_weight'] = payload.cfg_weight
+
     if payload.speed_factor is not None:
         voice_params['speed_factor'] = payload.speed_factor
+    elif 'speed_factor' in style_params:
+        voice_params['speed_factor'] = style_params['speed_factor']
 
-    logger.info(f"[{request_id}] Generating TTS: voice={voice_slug}, text_len={len(payload.text)}")
+    logger.info(
+        f"[{request_id}] Generating TTS: "
+        f"voice={voice_slug}, "
+        f"session={payload.session_id or 'global'}, "
+        f"style={style_params.get('detected_style')}, "
+        f"text_len={len(processed_text)}"
+    )
 
     try:
-        # Generate audio using Chatterbox TTS
-        import numpy as np
-        import torch
-        
-        wav = tts_model.generate(
-            text=payload.text,
-            exaggeration=voice_params['exaggeration'],
-            temperature=voice_params['temperature'],
-            cfg_weight=voice_params['cfg_weight']
-        )
-        
-        # Convert torch tensor to numpy if needed
-        if isinstance(wav, torch.Tensor):
-            wav = wav.cpu().numpy()
-        
-        # Ensure it's a 1D float32 array
-        wav = np.array(wav, dtype=np.float32)
-        if len(wav.shape) > 1:
-            wav = wav.flatten()
+        # Step 3: Acquire voice lock (prevents overlap)
+        # This is the KEY to preventing voice conflicts!
+        async with voice_queue.acquire_voice(
+            request_id=request_id,
+            voice_id=voice_slug,
+            session_id=payload.session_id,
+            timeout=30.0  # Max 30s wait time
+        ):
+            logger.info(f"[{request_id}] Voice lock acquired, synthesizing...")
 
-        # Apply speed factor if needed
-        if voice_params['speed_factor'] != 1.0:
-            import librosa
-            wav = librosa.effects.time_stretch(wav, rate=1.0 / voice_params['speed_factor'])
+            # Generate audio using Chatterbox TTS
+            import numpy as np
+            import torch
+
+            wav = tts_model.generate(
+                text=processed_text,  # Use preprocessed text!
+                exaggeration=voice_params['exaggeration'],
+                temperature=voice_params['temperature'],
+                cfg_weight=voice_params['cfg_weight']
+            )
+        
+            # Convert torch tensor to numpy if needed
+            if isinstance(wav, torch.Tensor):
+                wav = wav.cpu().numpy()
+
+            # Ensure it's a 1D float32 array
+            wav = np.array(wav, dtype=np.float32)
+            if len(wav.shape) > 1:
+                wav = wav.flatten()
+
+            # Apply speed factor if needed
+            if voice_params['speed_factor'] != 1.0:
+                import librosa
+                wav = librosa.effects.time_stretch(wav, rate=1.0 / voice_params['speed_factor'])
+
+            logger.info(
+                f"[{request_id}] Audio generated: "
+                f"{len(wav)} samples, "
+                f"duration={(len(wav) / 24000):.2f}s"
+            )
+        # Voice lock automatically released here
 
         # Convert to requested format
         if payload.format == "wav":
@@ -261,8 +331,18 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
                 "X-Request-ID": request_id,
                 "X-Generation-Time-MS": str(duration_ms),
                 "X-Audio-Duration-Seconds": f"{audio_duration:.2f}",
-                "X-Voice": voice_slug
+                "X-Voice": voice_slug,
+                "X-Session-ID": payload.session_id or "global",
+                "X-Detected-Style": style_params.get('detected_style', 'neutral'),
+                "X-Queue-Stats": str(voice_queue.get_stats())
             }
+        )
+
+    except TimeoutError as e:
+        logger.error(f"[{request_id}] Voice queue timeout: {e}")
+        raise HTTPException(
+            status_code=429,  # Too Many Requests
+            detail=f"Voice busy: {str(e)}. Try again or use a different voice."
         )
 
     except Exception as e:
@@ -301,9 +381,38 @@ async def get_voice_details(voice_slug: str):
 @router.get("/health", summary="API Health Check")
 async def health_check(request: Request):
     """Check if the TTS API is ready"""
+    voice_queue = get_voice_queue()
     return {
         "status": "healthy",
         "tts_model_loaded": hasattr(request.app.state, 'tts_model') and request.app.state.tts_model is not None,
         "voices_available": len(get_voice_manager().list_voices()),
-        "formats_supported": ["wav", "mp3", "pcm16"]
+        "formats_supported": ["wav", "mp3", "pcm16"],
+        "features": [
+            "voice_isolation",
+            "emotion_detection",
+            "text_preprocessing",
+            "session_queuing"
+        ],
+        "queue_stats": voice_queue.get_stats()
+    }
+
+
+@router.get("/queue/stats", summary="Get Queue Statistics")
+async def get_queue_stats():
+    """Get detailed queue and voice isolation statistics"""
+    voice_queue = get_voice_queue()
+    return {
+        "queue": voice_queue.get_stats(),
+        "timestamp": time.time()
+    }
+
+
+@router.post("/queue/cleanup/{session_id}", summary="Cleanup Session")
+async def cleanup_session(session_id: str):
+    """Force cleanup of all locks for a session"""
+    voice_queue = get_voice_queue()
+    await voice_queue.cleanup_session(session_id)
+    return {
+        "status": "cleaned",
+        "session_id": session_id
     }

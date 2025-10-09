@@ -1,0 +1,128 @@
+{
+  "naija_female": {
+    "name": "Naija Female",
+    "base_voice": "en-NG-AdaNeural",
+    "language": "en-NG",
+    "gender": "female",
+    "description": "Nigerian English female voice - calm and professional",
+    "params": {
+      "temperature": 0.75,
+      "exaggeration": 1.2,
+      "cfg_weight": 0.5,
+      "speed_factor": 0.95,
+      "pitch_shift": "-1st",
+      "rate": "-5%",
+      "style": "calm"
+    },
+    "concurrency": {
+      "max_concurrent": 1,
+      "queue_timeout": 30,
+      "isolation_key": "naija_female"
+    }
+  },
+  "naija_male": {
+    "name": "Naija Male",
+    "base_voice": "en-NG-BayoNeural",
+    "language": "en-NG",
+    "gender": "male",
+    "description": "Nigerian English male voice - energetic and clear",
+    "params": {
+      "temperature": 0.8,
+      "exaggeration": 1.4,
+      "cfg_weight": 0.55,
+      "speed_factor": 0.90,
+      "pitch_shift": "+2st",
+      "rate": "-10%",
+      "style": "energetic"
+    },
+    "concurrency": {
+      "max_concurrent": 1,
+      "queue_timeout": 30,
+      "isolation_key": "naija_male"
+    }
+  },
+  "emily-en-us": {
+    "name": "Emily (US English)",
+    "base_voice": "en-US-EmmaMultilingualNeural",
+    "language": "en-US",
+    "gender": "female",
+    "description": "American English female - friendly support agent tone",
+    "params": {
+      "temperature": 0.8,
+      "exaggeration": 1.3,
+      "cfg_weight": 0.5,
+      "speed_factor": 1.0,
+      "pitch_shift": "-2st",
+      "rate": "-8%",
+      "style": "friendly"
+    },
+    "concurrency": {
+      "max_concurrent": 1,
+      "queue_timeout": 30,
+      "isolation_key": "emily-en-us"
+    }
+  },
+  "support_agent": {
+    "name": "Support Agent",
+    "base_voice": "en-US-JennyMultilingualNeural",
+    "language": "en-US",
+    "gender": "female",
+    "description": "Professional customer support voice - empathetic and clear",
+    "params": {
+      "temperature": 0.75,
+      "exaggeration": 1.2,
+      "cfg_weight": 0.48,
+      "speed_factor": 0.92,
+      "pitch_shift": "-3st",
+      "rate": "-8%",
+      "style": "professional"
+    },
+    "concurrency": {
+      "max_concurrent": 1,
+      "queue_timeout": 30,
+      "isolation_key": "support_agent"
+    }
+  },
+  "urgent_agent": {
+    "name": "Urgent Agent",
+    "base_voice": "en-US-GuyNeural",
+    "language": "en-US",
+    "gender": "male",
+    "description": "Urgent tone for time-sensitive messages",
+    "params": {
+      "temperature": 0.85,
+      "exaggeration": 1.5,
+      "cfg_weight": 0.6,
+      "speed_factor": 1.1,
+      "pitch_shift": "+2st",
+      "rate": "+10%",
+      "style": "urgent"
+    },
+    "concurrency": {
+      "max_concurrent": 1,
+      "queue_timeout": 30,
+      "isolation_key": "urgent_agent"
+    }
+  },
+  "apologetic_agent": {
+    "name": "Apologetic Agent",
+    "base_voice": "en-US-JennyMultilingualNeural",
+    "language": "en-US",
+    "gender": "female",
+    "description": "Empathetic tone for apologies and sensitive situations",
+    "params": {
+      "temperature": 0.7,
+      "exaggeration": 1.1,
+      "cfg_weight": 0.45,
+      "speed_factor": 0.85,
+      "pitch_shift": "-3st",
+      "rate": "-15%",
+      "style": "apologetic"
+    },
+    "concurrency": {
+      "max_concurrent": 1,
+      "queue_timeout": 30,
+      "isolation_key": "apologetic_agent"
+    }
+  }
+}
