@@ -1,0 +1,141 @@
+{
+  "professional_female": {
+    "name": "Professional Female (Heart)",
+    "kokoro_voice": "af_heart",
+    "language": "en-US",
+    "gender": "female",
+    "description": "Warm, professional American female - perfect for customer support and appointment reminders",
+    "style": "professional",
+    "params": {
+      "speed": 0.85,
+      "pitch": -0.2,
+      "emotion": "calm"
+    },
+    "best_for": [
+      "Customer support",
+      "Appointment reminders",
+      "Service notifications",
+      "General assistance"
+    ]
+  },
+
+  "professional_male": {
+    "name": "Professional Male (Adam)",
+    "kokoro_voice": "am_adam",
+    "language": "en-US",
+    "gender": "male",
+    "description": "Authoritative, confident American male - great for announcements and alerts",
+    "style": "confident",
+    "params": {
+      "speed": 0.90,
+      "pitch": -0.3,
+      "emotion": "authoritative"
+    },
+    "best_for": [
+      "System announcements",
+      "Alert messages",
+      "Business communications",
+      "Urgent notifications"
+    ]
+  },
+
+  "friendly_female": {
+    "name": "Friendly Female (Bella)",
+    "kokoro_voice": "af_bella",
+    "language": "en-US",
+    "gender": "female",
+    "description": "Friendly, energetic American female - ideal for sales and marketing",
+    "style": "friendly",
+    "params": {
+      "speed": 0.90,
+      "pitch": -0.1,
+      "emotion": "energetic"
+    },
+    "best_for": [
+      "Sales calls",
+      "Marketing messages",
+      "Promotional content",
+      "Welcome messages"
+    ]
+  },
+
+  "calm_female": {
+    "name": "Calm Female (Nicole)",
+    "kokoro_voice": "af_nicole",
+    "language": "en-US",
+    "gender": "female",
+    "description": "Calm, soothing American female - perfect for sensitive situations",
+    "style": "soothing",
+    "params": {
+      "speed": 0.80,
+      "pitch": -0.3,
+      "emotion": "calm"
+    },
+    "best_for": [
+      "Apology messages",
+      "Sensitive communications",
+      "Meditation/wellness",
+      "De-escalation"
+    ]
+  },
+
+  "british_female": {
+    "name": "British Female (Emma)",
+    "kokoro_voice": "bf_emma",
+    "language": "en-GB",
+    "gender": "female",
+    "description": "Calm, professional British female - premium customer service tone",
+    "style": "premium",
+    "params": {
+      "speed": 0.88,
+      "pitch": -0.15,
+      "emotion": "reassuring"
+    },
+    "best_for": [
+      "Premium support",
+      "Luxury brands",
+      "Formal communications",
+      "International clients"
+    ]
+  },
+
+  "british_male": {
+    "name": "British Male (George)",
+    "kokoro_voice": "bm_george",
+    "language": "en-GB",
+    "gender": "male",
+    "description": "Authoritative, trustworthy British male - corporate communications",
+    "style": "corporate",
+    "params": {
+      "speed": 0.90,
+      "pitch": -0.2,
+      "emotion": "trustworthy"
+    },
+    "best_for": [
+      "Corporate announcements",
+      "Financial services",
+      "Legal communications",
+      "Executive messages"
+    ]
+  },
+
+  "business_male": {
+    "name": "Business Male (Michael)",
+    "kokoro_voice": "am_michael",
+    "language": "en-US",
+    "gender": "male",
+    "description": "Professional, trustworthy American male - business communications",
+    "style": "business",
+    "params": {
+      "speed": 0.88,
+      "pitch": -0.25,
+      "emotion": "professional"
+    },
+    "best_for": [
+      "B2B communications",
+      "Professional services",
+      "Technical support",
+      "Account management"
+    ]
+  }
+}
