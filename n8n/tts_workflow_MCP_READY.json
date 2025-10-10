@@ -1,0 +1,220 @@
+{
+  "name": "Maya TTS - MCP Server with JWT Auth",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "path": "mcp/maya-tts",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "mcp-trigger-node",
+      "name": "MCP Server Trigger",
+      "type": "n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [240, 280],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "jwt-bearer-auth",
+          "name": "JWT Bearer Token"
+        }
+      },
+      "webhookId": "maya-tts-mcp"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract and validate request data\nconst inputData = $input.all();\nconst firstItem = inputData[0]?.json || {};\n\n// Support multiple input formats\nconst text = firstItem.text || firstItem.body?.text || 'Hello from Maya!';\nconst voice = firstItem.voice || firstItem.body?.voice || 'emily-en-us';\nconst language = firstItem.language || firstItem.body?.language || 'en-NG';\nconst tone = firstItem.tone || firstItem.body?.tone || 'warm';\n\n// Maya personality defaults\nconst mayaConfig = {\n  text: text,\n  voice: voice,\n  language: language,\n  tone: tone,\n  speed: firstItem.speed || 1.0,\n  pitch: firstItem.pitch || 0,\n  volume: firstItem.volume || 1.0,\n  personality: 'maya',\n  timestamp: new Date().toISOString()\n};\n\nreturn [{ json: mayaConfig }];"
+      },
+      "id": "code-node-validator",
+      "name": "Maya Config Validator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [440, 280],
+      "notes": "Validates input and applies Maya's personality defaults"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts",
+        "authentication": "none",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  text: $json.text,\n  voice: $json.voice,\n  language: $json.language,\n  speed: $json.speed,\n  pitch: $json.pitch,\n  volume: $json.volume\n}) }}",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "neverError": false,
+              "responseFormat": "file",
+              "outputPropertyName": "audio_data",
+              "fullResponse": false
+            }
+          },
+          "retry": {
+            "retry": {
+              "maxRetries": 3,
+              "retryOnFail": true,
+              "waitBetweenRetries": 1000
+            }
+          }
+        }
+      },
+      "id": "http-runpod-tts",
+      "name": "RunPod TTS API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [640, 280],
+      "notes": "✅ RunPod Chatterbox TTS\n🎙️ Maya's voice synthesis endpoint\n📍 Pod: a288y3vpbfxwkk\n🔊 Supports: Nigerian English, Pidgin, multi-tone"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare MCP response with metadata\nconst audioData = $input.first().binary.audio_data;\nconst config = $input.first().json;\n\nreturn [{\n  json: {\n    success: true,\n    personality: 'maya',\n    voice: config.voice,\n    language: config.language,\n    tone: config.tone,\n    duration_estimate: Math.ceil(config.text.length / 15) + 's',\n    timestamp: config.timestamp,\n    message: 'Maya TTS synthesis complete'\n  },\n  binary: {\n    data: audioData\n  }\n}];"
+      },
+      "id": "code-response-formatter",
+      "name": "Format MCP Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [840, 280],
+      "notes": "Adds Maya metadata to response"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "X-Maya-Version",
+                "value": "1.0.0"
+              },
+              {
+                "name": "X-Personality",
+                "value": "maya"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-node",
+      "name": "Respond to MCP Client",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1040, 280]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseCode": 401,
+        "responseBody": "={{ { error: 'Unauthorized', message: 'Invalid or missing JWT token' } }}",
+        "options": {}
+      },
+      "id": "error-unauthorized",
+      "name": "Auth Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [440, 480],
+      "notes": "Returns 401 if JWT validation fails"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseCode": 500,
+        "responseBody": "={{ { error: 'TTS Synthesis Failed', message: $json.error || 'Unknown error', personality: 'maya' } }}",
+        "options": {}
+      },
+      "id": "error-synthesis",
+      "name": "Synthesis Error Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [840, 480],
+      "notes": "Returns 500 if TTS synthesis fails"
+    }
+  ],
+  "connections": {
+    "MCP Server Trigger": {
+      "main": [
+        [
+          {
+            "node": "Maya Config Validator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Maya Config Validator": {
+      "main": [
+        [
+          {
+            "node": "RunPod TTS API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RunPod TTS API": {
+      "main": [
+        [
+          {
+            "node": "Format MCP Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Synthesis Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format MCP Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to MCP Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    {
+      "createdAt": "2025-10-09T00:00:00.000Z",
+      "updatedAt": "2025-10-09T00:00:00.000Z",
+      "id": "maya-tts",
+      "name": "Maya TTS"
+    },
+    {
+      "createdAt": "2025-10-09T00:00:00.000Z",
+      "updatedAt": "2025-10-09T00:00:00.000Z",
+      "id": "mcp-ready",
+      "name": "MCP Ready"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-09T00:00:00.000Z",
+  "versionId": "2",
+  "meta": {
+    "instanceId": "maya-mcp-server",
+    "description": "Maya TTS exposed as MCP tool with JWT authentication. Supports Nigerian English, Pidgin, and emotional voice synthesis.",
+    "documentation": "Send POST to /mcp/maya-tts with Authorization: Bearer <JWT_TOKEN>"
+  }
+}

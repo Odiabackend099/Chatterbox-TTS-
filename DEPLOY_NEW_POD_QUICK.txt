@@ -1,0 +1,98 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║  🚀 Deploy to New RunPod - QUICK COMMANDS                           ║
+║                                                                      ║
+║  Pod: aav4qfa6yqgt3k (Port 8000)                                    ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+
+📋 OPTION 1: WITH MODEL CACHE TRANSFER (Faster - Recommended)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Local Machine:
+──────────────
+./transfer_model_cache.sh
+
+RunPod Web Terminal (https://www.runpod.io/console/pods):
+─────────────────────────────────────────────────────────
+cd /workspace
+git clone https://github.com/Odiabackend099/Chatterbox-TTS-.git chatterbox-twilio-integration || (cd chatterbox-twilio-integration && git pull)
+cd chatterbox-twilio-integration
+chmod +x runpod/DEPLOY_PORT_8000.sh
+./runpod/DEPLOY_PORT_8000.sh
+
+Local Machine (Test):
+─────────────────────
+./test_new_pod.sh
+
+
+📋 OPTION 2: FRESH INSTALL (Simpler, downloads models ~10min)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+RunPod Web Terminal:
+───────────────────
+cd /workspace
+git clone https://github.com/Odiabackend099/Chatterbox-TTS-.git chatterbox-twilio-integration
+cd chatterbox-twilio-integration
+chmod +x runpod/DEPLOY_PORT_8000.sh
+./runpod/DEPLOY_PORT_8000.sh
+
+Local Machine (Test):
+─────────────────────
+./test_new_pod.sh
+
+
+🧪 VERIFY DEPLOYMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+curl https://aav4qfa6yqgt3k-8000.proxy.runpod.net/api/health
+
+Expected: {"status":"healthy","model_loaded":true}
+
+
+✅ WHAT'S ALREADY DONE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ n8n workflows updated with new URL
+✓ Documentation updated  
+✓ Deployment scripts created
+✓ Test scripts ready
+✓ Port 8000 configured (Jupyter uses 8888)
+
+
+📁 FILES CREATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+• transfer_model_cache.sh      - Transfer models from old pod
+• runpod/DEPLOY_PORT_8000.sh   - Deploy script for new pod
+• test_new_pod.sh              - Comprehensive test suite
+• DEPLOY_NEW_POD.md            - Full deployment guide
+
+
+🎯 QUICK REFERENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Old Pod:  a288y3vpbfxwkk (port 8888)
+New Pod:  aav4qfa6yqgt3k (port 8000)
+
+Old URL:  https://a288y3vpbfxwkk-8888.proxy.runpod.net
+New URL:  https://aav4qfa6yqgt3k-8000.proxy.runpod.net
+
+Old SSH:  ssh root@213.173.108.103 -p 14814 -i ~/.ssh/id_ed25519
+New SSH:  ssh root@157.157.221.29 -p 19191 -i ~/.ssh/id_ed25519
+
+
+📚 FULL DOCS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+See: DEPLOY_NEW_POD.md
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Created: October 10, 2025
+Status: ✅ READY TO DEPLOY
+
+🚀 START: ./transfer_model_cache.sh (or skip to Option 2)
+

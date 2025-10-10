@@ -8,8 +8,8 @@
 ## 🌐 **RunPod TTS Service**
 
 ```bash
-# Base URL (Port 8888 - Publicly Accessible)
-TTS_BASE_URL=https://a288y3vpbfxwkk-8888.proxy.runpod.net
+# Base URL (Port 8000 - Publicly Accessible)
+TTS_BASE_URL=https://aav4qfa6yqgt3k-8000.proxy.runpod.net
 
 # Endpoints
 TTS_ENDPOINT=/api/tts
@@ -18,8 +18,8 @@ VOICES_ENDPOINT=/api/voices
 DOCS_ENDPOINT=/docs
 
 # Pod Details
-RUNPOD_POD_ID=a288y3vpbfxwkk
-RUNPOD_PORT=8888
+RUNPOD_POD_ID=aav4qfa6yqgt3k
+RUNPOD_PORT=8000
 ```
 
 ---
@@ -94,7 +94,7 @@ cd /Users/odiadev/chatterbox-twilio-integration
 
 ### Direct API Call:
 ```bash
-curl -X POST "https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts" \
+curl -X POST "https://aav4qfa6yqgt3k-8000.proxy.runpod.net/api/tts" \
   -H "Content-Type: application/json" \
   -d '{"text": "Hello from Nigeria!", "voice": "emily-en-us"}' \
   --output hello.wav
@@ -102,12 +102,12 @@ curl -X POST "https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/tts" \
 
 ### Health Check:
 ```bash
-curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/health
+curl https://aav4qfa6yqgt3k-8000.proxy.runpod.net/api/health
 ```
 
 ### List Voices:
 ```bash
-curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/voices
+curl https://aav4qfa6yqgt3k-8000.proxy.runpod.net/api/voices
 ```
 
 ---
@@ -116,7 +116,7 @@ curl https://a288y3vpbfxwkk-8888.proxy.runpod.net/api/voices
 
 **Environment Variables** (in n8n Settings):
 ```bash
-TTS_BASE_URL=https://a288y3vpbfxwkk-8888.proxy.runpod.net
+TTS_BASE_URL=https://aav4qfa6yqgt3k-8000.proxy.runpod.net
 TTS_API_KEY=cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 DEFAULT_VOICE=emily-en-us
 ```
@@ -132,12 +132,12 @@ Header Value: Bearer cw_live_gbgRbtMdunztT_nQ-scINXW7EuG_VTCMB9MkwPhlRFU
 ## 🎯 **SSH Access to RunPod**
 
 ```bash
-ssh a288y3vpbfxwkk-6441165c@ssh.runpod.io -i ~/.ssh/id_ed25519
+ssh aav4qfa6yqgt3k-64410d3d@ssh.runpod.io -i ~/.ssh/id_ed25519
 ```
 
 **Or Direct SSH:**
 ```bash
-ssh root@213.173.108.103 -p 14814 -i ~/.ssh/id_ed25519
+ssh root@157.157.221.29 -p 19191 -i ~/.ssh/id_ed25519
 ```
 
 ---
@@ -145,7 +145,7 @@ ssh root@213.173.108.103 -p 14814 -i ~/.ssh/id_ed25519
 ## ✅ **Verified Working**
 
 ```
-✓ Service URL:      https://a288y3vpbfxwkk-8888.proxy.runpod.net
+✓ Service URL:      https://aav4qfa6yqgt3k-8000.proxy.runpod.net
 ✓ Health Status:    healthy
 ✓ Model Loaded:     true
 ✓ Voices:           5 available

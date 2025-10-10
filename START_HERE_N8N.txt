@@ -1,0 +1,130 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║  🚀 n8n TTS Workflow - START HERE                                   ║
+║                                                                      ║
+║  Time to Setup: 3 minutes                                           ║
+║  Status: ✅ Production Ready                                         ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+
+📋 3-STEP SETUP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+STEP 1: IMPORT WORKFLOW (1 minute)
+───────────────────────────────────────────────────────────────────────
+
+1. Open n8n in your browser
+2. Click "Workflows" → "Import from File"
+3. Select: n8n/COMPLETE_TTS_WORKFLOW.json
+4. Click "Import"
+
+✅ You should see 4 connected nodes
+
+
+STEP 2: ACTIVATE (10 seconds)
+───────────────────────────────────────────────────────────────────────
+
+1. Find toggle switch at top-right
+2. Turn it ON (green)
+
+✅ Switch should say "Active"
+
+
+STEP 3: TEST IT (1 minute)
+───────────────────────────────────────────────────────────────────────
+
+1. Click "Webhook Trigger" node
+2. Copy the "Production URL"
+3. Run in terminal:
+
+   cd /Users/odiadev/chatterbox-twilio-integration
+   ./quick_n8n_test.sh "YOUR_WEBHOOK_URL_HERE"
+
+✅ Should see "🎉 ALL TESTS PASSED!"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+📖 WHAT YOU GET
+───────────────────────────────────────────────────────────────────────
+
+✅ Webhook that accepts text and returns MP3 audio
+✅ Integrated with your RunPod TTS service
+✅ Auto-retry on failures (3 attempts)
+✅ CORS enabled for web apps
+✅ Battle-tested and production-ready
+
+
+📚 DOCUMENTATION
+───────────────────────────────────────────────────────────────────────
+
+• N8N_COMPLETE_SETUP.md         ← Full end-to-end guide
+• IMPORT_AND_TEST_N8N.md        ← Detailed instructions
+• quick_n8n_test.sh             ← Automated test script
+
+
+🧪 QUICK TEST (Manual)
+───────────────────────────────────────────────────────────────────────
+
+curl -X POST "YOUR_WEBHOOK_URL" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Hello from Nigeria!", "voice": "emily-en-us"}' \
+  --output test.mp3
+
+afplay test.mp3
+
+
+🎭 AVAILABLE VOICES
+───────────────────────────────────────────────────────────────────────
+
+• emily-en-us    (Female, US English)  ← Default
+• james-en-us    (Male, US English)
+• sophia-en-gb   (Female, British English)
+• marcus-en-us   (Male, US English)
+• luna-en-us     (Female, US English)
+
+
+🐛 TROUBLESHOOTING
+───────────────────────────────────────────────────────────────────────
+
+❌ 404 Not Found
+   → Workflow not activated (turn toggle ON)
+   → Wrong webhook URL
+
+❌ Connection Refused
+   → n8n not running
+   → Wrong URL/port
+
+❌ Timeout
+   → RunPod service cold-starting
+   → Check: curl https://aav4qfa6yqgt3k-8000.proxy.runpod.net/api/health
+
+
+✅ DONE!
+───────────────────────────────────────────────────────────────────────
+
+Once tested, use the webhook in your apps:
+
+JavaScript:
+  fetch('YOUR_WEBHOOK_URL', {
+    method: 'POST',
+    body: JSON.stringify({text: 'Hello!', voice: 'emily-en-us'})
+  })
+
+Python:
+  requests.post('YOUR_WEBHOOK_URL', 
+    json={'text': 'Hello!', 'voice': 'emily-en-us'})
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Created: October 9, 2025
+Status: ✅ PRODUCTION READY
+Pod: aav4qfa6yqgt3k (Port 8000)
+TTS Service: https://aav4qfa6yqgt3k-8000.proxy.runpod.net/api/tts
+
+🎉 NOW GO BUILD! 🚀
+
