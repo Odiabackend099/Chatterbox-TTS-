@@ -87,6 +87,19 @@ def create_default_voices():
                 "cfg_weight": 0.4,
                 "speed_factor": 1.05
             }
+        },
+        {
+            "name": "Maya",
+            "slug": "maya-professional",
+            "language": "en-US",
+            "gender": "female",
+            "description": "Warm, natural professional female voice - optimized for customer support",
+            "params": {
+                "temperature": 0.6,
+                "exaggeration": 0.85,
+                "cfg_weight": 0.75,
+                "speed_factor": 0.88
+            }
         }
     ]
 

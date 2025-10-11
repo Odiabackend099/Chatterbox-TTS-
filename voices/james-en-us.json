@@ -1,0 +1,13 @@
+{
+  "name": "James",
+  "slug": "james-en-us",
+  "language": "en-US",
+  "gender": "male",
+  "description": "Professional American English male voice",
+  "params": {
+    "temperature": 0.8,
+    "exaggeration": 1.0,
+    "cfg_weight": 0.5,
+    "speed_factor": 1.0
+  }
+}

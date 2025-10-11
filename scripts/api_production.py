@@ -29,7 +29,7 @@ router = APIRouter(prefix="/api", tags=["Production TTS"])
 
 class TTSRequestProduction(BaseModel):
     text: str
-    voice: Optional[str] = None  # Voice slug, e.g., "emily-en-us"
+    voice: Optional[str] = None  # Voice slug, e.g., "maya-professional"
     format: str = "wav"  # wav|mp3|pcm16
     session_id: Optional[str] = None  # Session ID for voice isolation
     temperature: Optional[float] = None
@@ -58,7 +58,7 @@ async def generate_tts_production(request: Request, payload: TTSRequestProductio
     ```json
     {
         "text": "Hello world!",
-        "voice": "emily-en-us",
+        "voice": "maya-professional",
         "format": "wav",
         "session_id": "call_12345",
         "auto_detect_emotion": true

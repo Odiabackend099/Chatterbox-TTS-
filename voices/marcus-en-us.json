@@ -1,0 +1,13 @@
+{
+  "name": "Marcus",
+  "slug": "marcus-en-us",
+  "language": "en-US",
+  "gender": "male",
+  "description": "Deep authoritative male voice",
+  "params": {
+    "temperature": 0.7,
+    "exaggeration": 0.8,
+    "cfg_weight": 0.6,
+    "speed_factor": 0.95
+  }
+}

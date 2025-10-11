@@ -64,12 +64,12 @@ class VoiceManager:
         return voice.get('params', self._get_default_params())
 
     def _get_default_params(self) -> Dict[str, Any]:
-        """Get default TTS parameters"""
+        """Get default TTS parameters - OPTIMIZED FOR NATURAL VOICE"""
         return {
-            "temperature": 0.8,
-            "exaggeration": 1.3,
-            "cfg_weight": 0.5,
-            "speed_factor": 1.0
+            "temperature": 0.6,      # Was 0.8 - too variable
+            "exaggeration": 0.85,    # Was 1.3 - too theatrical
+            "cfg_weight": 0.75,      # Was 0.5 - better adherence
+            "speed_factor": 0.88     # Was 1.0 - clearer speech
         }
 
     def list_voices(self) -> list:
@@ -87,12 +87,14 @@ class VoiceManager:
 
     def get_default_voice(self) -> str:
         """Get default voice slug"""
-        if 'emily-en-us' in self.voices:
+        if 'maya-professional' in self.voices:
+            return 'maya-professional'
+        elif 'emily-en-us' in self.voices:
             return 'emily-en-us'
         elif self.voices:
             return list(self.voices.keys())[0]
         else:
-            return 'emily-en-us'  # Fallback
+            return 'maya-professional'  # Fallback
 
 # Global voice manager instance
 _voice_manager: Optional[VoiceManager] = None

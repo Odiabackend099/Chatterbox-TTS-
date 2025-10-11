@@ -1,0 +1,13 @@
+{
+  "name": "Sophia",
+  "slug": "sophia-en-gb",
+  "language": "en-GB",
+  "gender": "female",
+  "description": "British English female voice",
+  "params": {
+    "temperature": 0.8,
+    "exaggeration": 1.2,
+    "cfg_weight": 0.5,
+    "speed_factor": 1.0
+  }
+}

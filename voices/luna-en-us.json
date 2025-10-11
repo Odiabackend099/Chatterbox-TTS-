@@ -1,0 +1,13 @@
+{
+  "name": "Luna",
+  "slug": "luna-en-us",
+  "language": "en-US",
+  "gender": "female",
+  "description": "Expressive energetic female voice",
+  "params": {
+    "temperature": 0.9,
+    "exaggeration": 1.5,
+    "cfg_weight": 0.4,
+    "speed_factor": 1.05
+  }
+}

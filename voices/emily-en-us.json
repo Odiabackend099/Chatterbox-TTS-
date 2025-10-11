@@ -1,0 +1,13 @@
+{
+  "name": "Emily",
+  "slug": "emily-en-us",
+  "language": "en-US",
+  "gender": "female",
+  "description": "Natural American English female voice",
+  "params": {
+    "temperature": 0.8,
+    "exaggeration": 1.3,
+    "cfg_weight": 0.5,
+    "speed_factor": 1.0
+  }
+}
